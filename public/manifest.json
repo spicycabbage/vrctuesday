@@ -1,7 +1,7 @@
 {
-  "name": "Friday Badminton App",
-  "short_name": "Friday Badminton",
-  "description": "Mobile PWA for scoring doubles badminton tournaments with 8 players across 7 rounds",
+  "name": "VRC Tuesday",
+  "short_name": "VRC Tuesday",
+  "description": "Team-based badminton tournament scoring app for VRC Tuesday",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
