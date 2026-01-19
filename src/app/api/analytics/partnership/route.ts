@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    const tournamentIds = tournaments.map(t => t.id);
+    const tournamentIds = tournaments.map((t: any) => t.id);
     
     // Fetch all data in bulk
     const [allPlayers, allMatches] = await Promise.all([
@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
 
     // Create lookup maps
     const tournamentDateMap: { [id: string]: string } = {};
-    tournaments.forEach(t => { tournamentDateMap[t.id] = t.date; });
+    tournaments.forEach((t: any) => { tournamentDateMap[t.id] = t.date; });
 
     const playersByTournament: { [tid: string]: any[] } = {};
     allPlayers.forEach((p: any) => {
