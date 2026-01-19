@@ -211,27 +211,29 @@ export default function TournamentPage({ params }: { params: Promise<{ id: strin
           />
         )}
         {activeTab === 'Results' && (
-          <ResultsTab tournament={tournament} />
+          <>
+            <ResultsTab tournament={tournament} />
+            
+            {/* Actions - Only shown in Results tab */}
+            <div className="mt-6 space-y-3">
+              {isTournamentComplete && !tournament.isFinalized && (
+                <button
+                  onClick={handleFinalize}
+                  className="w-full bg-red-600 text-white py-4 rounded-lg font-semibold hover:bg-red-700 transition"
+                >
+                  Finalize Tournament
+                </button>
+              )}
+              
+              <button
+                onClick={() => router.push('/')}
+                className="w-full bg-gray-600 text-white py-3 rounded-lg font-semibold hover:bg-gray-700 transition"
+              >
+                Back to Home
+              </button>
+            </div>
+          </>
         )}
-      </div>
-
-      {/* Actions */}
-      <div className="px-4 mt-6 space-y-3">
-        {isTournamentComplete && !tournament.isFinalized && (
-          <button
-            onClick={handleFinalize}
-            className="w-full bg-red-600 text-white py-4 rounded-lg font-semibold hover:bg-red-700 transition"
-          >
-            Finalize Tournament
-          </button>
-        )}
-        
-        <button
-          onClick={() => router.push('/')}
-          className="w-full bg-gray-600 text-white py-3 rounded-lg font-semibold hover:bg-gray-700 transition"
-        >
-          Back to Home
-        </button>
       </div>
     </div>
   );
