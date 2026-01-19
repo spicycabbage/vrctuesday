@@ -229,16 +229,7 @@ export default function CreateTournament() {
 
           {/* Team 1 */}
           <div className="team-container team-1-bg">
-            <label className="block text-sm font-semibold mb-2 text-gray-700">
-              Team 1 Name
-            </label>
-            <input
-              type="text"
-              value={team1Name}
-              onChange={(e) => setTeam1Name(e.target.value)}
-              className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none mb-3"
-              placeholder="Team name"
-            />
+            <h3 className="text-sm font-semibold mb-3 text-gray-700">Team A</h3>
             
             <div className="space-y-2">
               <p className="text-xs font-semibold text-gray-600 mb-1">Women Players</p>
@@ -255,16 +246,7 @@ export default function CreateTournament() {
 
           {/* Team 2 */}
           <div className="team-container team-2-bg">
-            <label className="block text-sm font-semibold mb-2 text-gray-700">
-              Team 2 Name
-            </label>
-            <input
-              type="text"
-              value={team2Name}
-              onChange={(e) => setTeam2Name(e.target.value)}
-              className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none mb-3"
-              placeholder="Team name"
-            />
+            <h3 className="text-sm font-semibold mb-3 text-gray-700">Team B</h3>
             
             <div className="space-y-2">
               <p className="text-xs font-semibold text-gray-600 mb-1">Women Players</p>
