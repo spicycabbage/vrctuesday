@@ -73,7 +73,7 @@ function TournamentResultsContent() {
                 <div key={tournament.id} className="max-w-full overflow-hidden">
                   <button
                     onClick={() => toggleExpand(tournament.id)}
-                    className="w-full p-4 rounded-lg text-white transition bg-black hover:bg-gray-900"
+                    className="w-full p-4 rounded-lg text-white transition-colors bg-black hover:bg-gray-900"
                   >
                     <div className="flex justify-between items-center">
                       <div className="flex items-center gap-3">
