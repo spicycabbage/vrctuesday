@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json([]);
     }
 
-    const tournamentIds = tournaments.map(t => t.id);
+    const tournamentIds = tournaments.map((t: any) => t.id);
     
     // Fetch all data in bulk
     const [allPlayers, allMatches] = await Promise.all([
