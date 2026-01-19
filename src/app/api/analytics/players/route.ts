@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
 
     // Create lookup maps for fast access
     const tournamentDateMap: { [id: string]: string } = {};
-    tournaments.forEach(t => { tournamentDateMap[t.id] = t.date; });
+    tournaments.forEach((t: any) => { tournamentDateMap[t.id] = t.date; });
 
     const playersByTournament: { [tid: string]: any[] } = {};
     allPlayers.forEach((p: any) => {
