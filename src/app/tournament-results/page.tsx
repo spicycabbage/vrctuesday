@@ -70,7 +70,7 @@ function TournamentResultsContent() {
                 : 'Incomplete';
               
               return (
-                <div key={tournament.id} className="w-full">
+                <div key={tournament.id} className="max-w-full overflow-hidden">
                   <button
                     onClick={() => toggleExpand(tournament.id)}
                     className="w-full p-4 rounded-lg text-white transition bg-black hover:bg-gray-900"
@@ -95,8 +95,10 @@ function TournamentResultsContent() {
                   </button>
 
                   {isExpanded && (
-                    <div className="mt-2 p-4 bg-white rounded-lg overflow-hidden">
-                      <ResultsTab tournament={tournament} />
+                    <div className="mt-2 bg-white rounded-lg max-w-full">
+                      <div className="p-4">
+                        <ResultsTab tournament={tournament} />
+                      </div>
                     </div>
                   )}
                 </div>
