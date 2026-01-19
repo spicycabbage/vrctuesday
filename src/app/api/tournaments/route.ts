@@ -5,7 +5,7 @@ import { saveTournament, getActiveTournament } from '@/lib/tournamentRepo';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { accessCode, team1Name, team2Name, team1Players, team2Players } = body;
+    const { accessCode, team1Name, team2Name, team1Players, team2Players, date } = body;
 
     // Check if there's already an active tournament
     const activeTournament = await getActiveTournament();
@@ -46,6 +46,11 @@ export async function POST(request: NextRequest) {
       team1Players,
       team2Players
     );
+
+    // Set the date if provided
+    if (date) {
+      tournament.createdAt = new Date(date);
+    }
 
     // Save to database
     await saveTournament(tournament);

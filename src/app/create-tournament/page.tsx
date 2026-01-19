@@ -11,6 +11,10 @@ export default function CreateTournament() {
   const [accessCode, setAccessCode] = useState('111');
   const [team1Name, setTeam1Name] = useState('Team A');
   const [team2Name, setTeam2Name] = useState('Team B');
+  const [tournamentDate, setTournamentDate] = useState(() => {
+    const today = new Date();
+    return today.toISOString().split('T')[0];
+  });
   
   // Team 1 players: W1, W2, W3, M1, M2, M3
   const [team1Players, setTeam1Players] = useState<string[]>([
@@ -99,7 +103,8 @@ export default function CreateTournament() {
           team1Name,
           team2Name,
           team1Players,
-          team2Players
+          team2Players,
+          date: tournamentDate
         })
       });
 
@@ -195,9 +200,17 @@ export default function CreateTournament() {
   return (
     <div className="mobile-container safe-area-inset-top safe-area-inset-bottom pb-8">
       <div className="tournament-card">
-        <h1 className="text-3xl font-bold text-center mb-6 text-gray-800">
-          Create Tournament
-        </h1>
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-xl font-bold text-gray-800">
+            Create Tournament
+          </h1>
+          <input
+            type="date"
+            value={tournamentDate}
+            onChange={(e) => setTournamentDate(e.target.value)}
+            className="px-3 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none text-sm"
+          />
+        </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Access Code */}
