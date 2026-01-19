@@ -5,6 +5,42 @@ import { Tournament, TeamPlayer, Match, MatchType, SetScore } from './gameLogic'
  * Repository for team tournament database operations
  */
 
+export async function updateMatchScore(
+  tournamentId: string,
+  match: Match,
+  tournament: Tournament
+): Promise<void> {
+  await ensureSchema();
+
+  // Only update the specific match and tournament stats in parallel
+  await Promise.all([
+    // Update match scores
+    sql`
+      update team_matches set
+        set1_team1_score = ${match.set1?.team1Score ?? null},
+        set1_team2_score = ${match.set1?.team2Score ?? null},
+        set1_winner = ${match.set1?.winner ?? null},
+        set2_team1_score = ${match.set2?.team1Score ?? null},
+        set2_team2_score = ${match.set2?.team2Score ?? null},
+        set2_winner = ${match.set2?.winner ?? null},
+        completed = ${match.completed},
+        match_winner = ${match.matchWinner}
+      where tournament_id = ${tournamentId} and id = ${match.id}
+    `,
+
+    // Update tournament stats
+    sql`
+      update team_tournaments set
+        team1_sets_won = ${tournament.team1SetsWon},
+        team2_sets_won = ${tournament.team2SetsWon},
+        team1_total_points = ${tournament.team1TotalPoints},
+        team2_total_points = ${tournament.team2TotalPoints},
+        tournament_winner = ${tournament.tournamentWinner}
+      where id = ${tournamentId}
+    `
+  ]);
+}
+
 export async function saveTournament(tournament: Tournament): Promise<void> {
   await ensureSchema();
 

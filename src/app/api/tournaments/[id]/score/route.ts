@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getTournamentById, saveTournament } from '@/lib/tournamentRepo';
-import { updateMatchScore } from '@/lib/gameLogic';
+import { getTournamentById, updateMatchScore } from '@/lib/tournamentRepo';
+import { updateMatchScore as updateScore } from '@/lib/gameLogic';
 
 export async function POST(
   request: NextRequest,
@@ -34,8 +34,8 @@ export async function POST(
       );
     }
 
-    // Update score
-    const updatedTournament = updateMatchScore(
+    // Update score in memory
+    const updatedTournament = updateScore(
       tournament,
       matchId,
       setNumber,
@@ -43,8 +43,17 @@ export async function POST(
       team2Score
     );
 
-    // Save to database
-    await saveTournament(updatedTournament);
+    // Find the updated match
+    const updatedMatch = updatedTournament.matches.find(m => m.id === matchId);
+    if (!updatedMatch) {
+      return NextResponse.json(
+        { error: 'Match not found' },
+        { status: 404 }
+      );
+    }
+
+    // Only update the specific match and tournament stats (fast!)
+    await updateMatchScore(id, updatedMatch, updatedTournament);
 
     return NextResponse.json({
       success: true,
