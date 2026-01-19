@@ -227,7 +227,7 @@ export default function CreateTournament() {
             />
           </div>
 
-          {/* Team 1 */}
+          {/* Team 1 - Team A (fixed name) */}
           <div className="team-container team-1-bg">
             <h3 className="text-sm font-semibold mb-3 text-gray-700">Team A</h3>
             
@@ -244,7 +244,7 @@ export default function CreateTournament() {
             </div>
           </div>
 
-          {/* Team 2 */}
+          {/* Team 2 - Team B (fixed name) */}
           <div className="team-container team-2-bg">
             <h3 className="text-sm font-semibold mb-3 text-gray-700">Team B</h3>
             
