@@ -129,7 +129,7 @@ export async function getTournamentById(id: string): Promise<Tournament | null> 
     teamNumber: 2
   }));
 
-  const matches: Match[] = matchRows.map(row => ({
+  const matches: Match[] = matchRows.map((row: any) => ({
     id: row.id,
     matchType: row.match_type as MatchType,
     team1Player1Id: row.team1_player1_id,
