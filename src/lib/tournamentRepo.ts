@@ -236,13 +236,100 @@ export async function getTournamentHistory(): Promise<Tournament[]> {
     select * from team_tournaments where is_finalized = true order by date desc, created_at desc limit 50
   `;
 
-  const tournaments: Tournament[] = [];
-  for (const row of tournamentRows) {
-    const tournament = await getTournamentById(row.id);
-    if (tournament) {
-      tournaments.push(tournament);
-    }
-  }
+  if (tournamentRows.length === 0) return [];
+
+  const tournamentIds = tournamentRows.map((t: any) => t.id);
+
+  // Fetch all players and matches for all tournaments in parallel (bulk query)
+  const [allPlayers, allMatches] = await Promise.all([
+    sql<DbTeamPlayerRow[]>`
+      select * from team_players 
+      where tournament_id = ANY(${tournamentIds})
+      order by tournament_id, team_number, id
+    `,
+    sql<DbTeamMatchRow[]>`
+      select * from team_matches 
+      where tournament_id = ANY(${tournamentIds})
+      order by tournament_id, id
+    `
+  ]);
+
+  // Group players and matches by tournament ID
+  const playersByTournament: { [tid: string]: DbTeamPlayerRow[] } = {};
+  const matchesByTournament: { [tid: string]: DbTeamMatchRow[] } = {};
+
+  allPlayers.forEach((p: any) => {
+    if (!playersByTournament[p.tournament_id]) playersByTournament[p.tournament_id] = [];
+    playersByTournament[p.tournament_id].push(p);
+  });
+
+  allMatches.forEach((m: any) => {
+    if (!matchesByTournament[m.tournament_id]) matchesByTournament[m.tournament_id] = [];
+    matchesByTournament[m.tournament_id].push(m);
+  });
+
+  // Build tournament objects
+  const tournaments: Tournament[] = tournamentRows.map((tournamentRow: any) => {
+    const playerRows = playersByTournament[tournamentRow.id] || [];
+    const matchRows = matchesByTournament[tournamentRow.id] || [];
+
+    const team1Players: TeamPlayer[] = playerRows
+      .filter((p: any) => p.team_number === 1)
+      .map((row: any) => ({
+        id: row.id,
+        name: row.name,
+        gender: row.gender as 'M' | 'W',
+        teamNumber: 1
+      }));
+
+    const team2Players: TeamPlayer[] = playerRows
+      .filter((p: any) => p.team_number === 2)
+      .map((row: any) => ({
+        id: row.id,
+        name: row.name,
+        gender: row.gender as 'M' | 'W',
+        teamNumber: 2
+      }));
+
+    const matches: Match[] = matchRows.map((row: any) => ({
+      id: row.id,
+      matchType: row.match_type as MatchType,
+      team1Player1Id: row.team1_player1_id,
+      team1Player2Id: row.team1_player2_id,
+      team2Player1Id: row.team2_player1_id,
+      team2Player2Id: row.team2_player2_id,
+      set1: row.set1_team1_score !== null ? {
+        team1Score: row.set1_team1_score,
+        team2Score: row.set1_team2_score!,
+        winner: row.set1_winner as 1 | 2 | null
+      } : null,
+      set2: row.set2_team1_score !== null ? {
+        team1Score: row.set2_team1_score,
+        team2Score: row.set2_team2_score!,
+        winner: row.set2_winner as 1 | 2 | null
+      } : null,
+      completed: row.completed,
+      matchWinner: row.match_winner as 1 | 2 | null
+    }));
+
+    return {
+      id: tournamentRow.id,
+      accessCode: tournamentRow.access_code,
+      date: tournamentRow.date,
+      team1Name: tournamentRow.team1_name,
+      team2Name: tournamentRow.team2_name,
+      team1Players,
+      team2Players,
+      matches,
+      team1SetsWon: tournamentRow.team1_sets_won,
+      team2SetsWon: tournamentRow.team2_sets_won,
+      team1TotalPoints: tournamentRow.team1_total_points,
+      team2TotalPoints: tournamentRow.team2_total_points,
+      tournamentWinner: tournamentRow.tournament_winner as 1 | 2 | null,
+      isFinalized: tournamentRow.is_finalized,
+      createdAt: new Date(tournamentRow.created_at)
+    };
+  });
 
   return tournaments;
 }
