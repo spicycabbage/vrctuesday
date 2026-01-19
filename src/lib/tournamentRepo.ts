@@ -115,14 +115,14 @@ export async function getTournamentById(id: string): Promise<Tournament | null> 
     order by id
   `;
 
-  const team1Players: TeamPlayer[] = team1PlayerRows.map(row => ({
+  const team1Players: TeamPlayer[] = team1PlayerRows.map((row: any) => ({
     id: row.id,
     name: row.name,
     gender: row.gender as 'M' | 'W',
     teamNumber: 1
   }));
 
-  const team2Players: TeamPlayer[] = team2PlayerRows.map(row => ({
+  const team2Players: TeamPlayer[] = team2PlayerRows.map((row: any) => ({
     id: row.id,
     name: row.name,
     gender: row.gender as 'M' | 'W',
