@@ -23,7 +23,7 @@ interface PartnershipStats {
 function PartnershipStatisticsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const year = searchParams.get('year') || '2026';
+  const year = searchParams.get('year') || 'all';
   const [allPlayers, setAllPlayers] = useState<string[]>([]);
   const [player1, setPlayer1] = useState('');
   const [player2, setPlayer2] = useState('');

@@ -7,7 +7,7 @@ export async function GET(request: NextRequest) {
     const year = searchParams.get('year');
     
     // Get tournaments filtered by year
-    const tournaments = year
+    const tournaments = (year && year !== 'all')
       ? await sql`SELECT id, date FROM team_tournaments WHERE is_finalized = true AND date LIKE ${year + '%'}`
       : await sql`SELECT id, date FROM team_tournaments WHERE is_finalized = true`;
 

@@ -8,10 +8,12 @@ export default function Home() {
   const router = useRouter();
   const [activeTournament, setActiveTournament] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [selectedYear, setSelectedYear] = useState('2026');
+  const [selectedYear, setSelectedYear] = useState('all');
+  const [availableYears, setAvailableYears] = useState<string[]>([]);
 
   useEffect(() => {
     checkActiveTournament();
+    fetchAvailableYears();
   }, []);
 
   const checkActiveTournament = async () => {
@@ -25,6 +27,18 @@ export default function Home() {
       // No active tournament
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchAvailableYears = async () => {
+    try {
+      const response = await fetch('/api/tournaments/years');
+      if (response.ok) {
+        const years = await response.json();
+        setAvailableYears(years);
+      }
+    } catch (err) {
+      console.error('Failed to fetch years');
     }
   };
 
@@ -79,9 +93,10 @@ export default function Home() {
           onChange={(e) => setSelectedYear(e.target.value)}
           className="w-full p-3 mb-4 border-2 border-gray-300 rounded-lg bg-gray-100 text-lg font-semibold"
         >
-          <option value="2026">2026</option>
-          <option value="2025">2025</option>
-          <option value="2024">2024</option>
+          <option value="all">All Years</option>
+          {availableYears.map(year => (
+            <option key={year} value={year}>{year}</option>
+          ))}
         </select>
 
         <Link 

@@ -8,8 +8,8 @@ export async function GET(request: NextRequest) {
     
     const tournaments = await getTournamentHistory();
     
-    // Filter by year if provided
-    const filteredTournaments = year 
+    // Filter by year if provided and not "all"
+    const filteredTournaments = (year && year !== 'all')
       ? tournaments.filter(t => t.date.startsWith(year))
       : tournaments;
     

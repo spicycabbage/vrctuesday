@@ -8,7 +8,7 @@ import ResultsTab from '@/components/ResultsTab';
 function TournamentResultsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const year = searchParams.get('year') || '2026';
+  const year = searchParams.get('year') || 'all';
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -52,7 +52,7 @@ function TournamentResultsContent() {
           Tournament History
         </h1>
         <p className="text-center text-sm text-gray-600 mt-1">
-          {tournaments.length} tournament{tournaments.length !== 1 ? 's' : ''} in {year}
+          {tournaments.length} tournament{tournaments.length !== 1 ? 's' : ''} {year === 'all' ? 'total' : `in ${year}`}
         </p>
       </div>
 

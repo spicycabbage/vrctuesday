@@ -36,7 +36,7 @@ interface PlayerStats {
 function AdvancedAnalyticsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const year = searchParams.get('year') || '2026';
+  const year = searchParams.get('year') || 'all';
   const [players, setPlayers] = useState<PlayerStats[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedPlayer, setExpandedPlayer] = useState<string | null>(null);
