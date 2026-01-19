@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 interface PlayerDetail {
@@ -33,7 +33,7 @@ interface PlayerStats {
   headToHead: HeadToHead[];
 }
 
-export default function AdvancedAnalytics() {
+function AdvancedAnalyticsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const year = searchParams.get('year') || '2026';
@@ -247,5 +247,13 @@ export default function AdvancedAnalytics() {
         </button>
       </div>
     </div>
+  );
+}
+
+export default function AdvancedAnalytics() {
+  return (
+    <Suspense fallback={<div className="mobile-container safe-area-inset-top safe-area-inset-bottom"><div className="tournament-card mt-12"><p className="text-center text-gray-600">Loading...</p></div></div>}>
+      <AdvancedAnalyticsContent />
+    </Suspense>
   );
 }

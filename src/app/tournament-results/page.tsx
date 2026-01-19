@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Tournament } from '@/lib/gameLogic';
 import ResultsTab from '@/components/ResultsTab';
 
-export default function TournamentResults() {
+function TournamentResultsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const year = searchParams.get('year') || '2026';
@@ -119,5 +119,13 @@ export default function TournamentResults() {
         </button>
       </div>
     </div>
+  );
+}
+
+export default function TournamentResults() {
+  return (
+    <Suspense fallback={<div className="mobile-container safe-area-inset-top safe-area-inset-bottom"><div className="tournament-card mt-12"><p className="text-center text-gray-600">Loading...</p></div></div>}>
+      <TournamentResultsContent />
+    </Suspense>
   );
 }

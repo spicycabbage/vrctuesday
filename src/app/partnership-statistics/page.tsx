@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 interface MatchDetail {
@@ -20,7 +20,7 @@ interface PartnershipStats {
   matches: MatchDetail[];
 }
 
-export default function PartnershipStatistics() {
+function PartnershipStatisticsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const year = searchParams.get('year') || '2026';
@@ -212,5 +212,13 @@ export default function PartnershipStatistics() {
         </button>
       </div>
     </div>
+  );
+}
+
+export default function PartnershipStatistics() {
+  return (
+    <Suspense fallback={<div className="mobile-container safe-area-inset-top safe-area-inset-bottom"><div className="tournament-card mt-12"><p className="text-center text-gray-600">Loading...</p></div></div>}>
+      <PartnershipStatisticsContent />
+    </Suspense>
   );
 }
