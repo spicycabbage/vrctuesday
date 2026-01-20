@@ -7,50 +7,19 @@ import Link from 'next/link';
 export default function Home() {
   const router = useRouter();
   const [activeTournament, setActiveTournament] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
   const [selectedYear, setSelectedYear] = useState('all');
   const [availableYears, setAvailableYears] = useState<string[]>([]);
 
   useEffect(() => {
-    checkActiveTournament();
-    fetchAvailableYears();
+    // Load both in parallel without blocking UI
+    Promise.all([
+      fetch('/api/tournaments').then(res => res.ok ? res.json() : null).catch(() => null),
+      fetch('/api/tournaments/years').then(res => res.ok ? res.json() : []).catch(() => [])
+    ]).then(([tournament, years]) => {
+      if (tournament) setActiveTournament(tournament);
+      setAvailableYears(years);
+    });
   }, []);
-
-  const checkActiveTournament = async () => {
-    try {
-      const response = await fetch('/api/tournaments');
-      if (response.ok) {
-        const tournament = await response.json();
-        setActiveTournament(tournament);
-      }
-    } catch (err) {
-      // No active tournament
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchAvailableYears = async () => {
-    try {
-      const response = await fetch('/api/tournaments/years');
-      if (response.ok) {
-        const years = await response.json();
-        setAvailableYears(years);
-      }
-    } catch (err) {
-      console.error('Failed to fetch years');
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="mobile-container safe-area-inset-top safe-area-inset-bottom">
-        <div className="tournament-card mt-12">
-          <p className="text-center text-gray-600">Loading...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="mobile-container safe-area-inset-top safe-area-inset-bottom pb-4">
