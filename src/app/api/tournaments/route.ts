@@ -38,6 +38,49 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate all player names are filled and not empty/whitespace
+    for (let i = 0; i < 6; i++) {
+      if (!team1Players[i] || typeof team1Players[i] !== 'string' || !team1Players[i].trim()) {
+        return NextResponse.json(
+          { error: `Team 1 player ${i + 1} name is required` },
+          { status: 400 }
+        );
+      }
+      if (!team2Players[i] || typeof team2Players[i] !== 'string' || !team2Players[i].trim()) {
+        return NextResponse.json(
+          { error: `Team 2 player ${i + 1} name is required` },
+          { status: 400 }
+        );
+      }
+    }
+
+    // Check for duplicate names within each team
+    const team1Names = team1Players.map((p: string) => p.trim().toLowerCase());
+    const team2Names = team2Players.map((p: string) => p.trim().toLowerCase());
+    
+    if (new Set(team1Names).size !== team1Names.length) {
+      return NextResponse.json(
+        { error: 'Team 1 has duplicate player names' },
+        { status: 400 }
+      );
+    }
+    
+    if (new Set(team2Names).size !== team2Names.length) {
+      return NextResponse.json(
+        { error: 'Team 2 has duplicate player names' },
+        { status: 400 }
+      );
+    }
+
+    // Check for same player on both teams
+    const duplicateAcrossTeams = team1Names.find(name => team2Names.includes(name));
+    if (duplicateAcrossTeams) {
+      return NextResponse.json(
+        { error: 'A player cannot be on both teams' },
+        { status: 400 }
+      );
+    }
+
     // Create tournament
     const tournament = createTournament(
       accessCode,

@@ -81,15 +81,41 @@ export default function CreateTournament() {
       return;
     }
 
+    // Validate all player names are filled and not just whitespace
     for (let i = 0; i < 6; i++) {
-      if (!team1Players[i]) {
-        setError(`Please select all Team 1 players`);
+      if (!team1Players[i] || !team1Players[i].trim()) {
+        const label = i < 3 ? `W${i + 1}` : `M${i - 2}`;
+        setError(`Please enter Team A ${label} name`);
         return;
       }
-      if (!team2Players[i]) {
-        setError(`Please select all Team 2 players`);
+      if (!team2Players[i] || !team2Players[i].trim()) {
+        const label = i < 3 ? `W${i + 1}` : `M${i - 2}`;
+        setError(`Please enter Team B ${label} name`);
         return;
       }
+    }
+
+    // Check for duplicate names within each team
+    const team1Names = team1Players.map(p => p.trim().toLowerCase());
+    const team2Names = team2Players.map(p => p.trim().toLowerCase());
+    
+    const team1Duplicates = team1Names.filter((name, index) => team1Names.indexOf(name) !== index);
+    if (team1Duplicates.length > 0) {
+      setError(`Team A has duplicate player names`);
+      return;
+    }
+    
+    const team2Duplicates = team2Names.filter((name, index) => team2Names.indexOf(name) !== index);
+    if (team2Duplicates.length > 0) {
+      setError(`Team B has duplicate player names`);
+      return;
+    }
+
+    // Check for same player on both teams
+    const duplicateAcrossTeams = team1Names.find(name => team2Names.includes(name));
+    if (duplicateAcrossTeams) {
+      setError(`Player cannot be on both teams`);
+      return;
     }
 
     setLoading(true);
