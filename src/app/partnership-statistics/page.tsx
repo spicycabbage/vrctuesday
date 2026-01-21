@@ -9,6 +9,7 @@ interface MatchDetail {
   opponents: string;
   score: string;
   date: string;
+  setNumber?: number;
 }
 
 interface PartnershipStats {
@@ -191,7 +192,9 @@ function PartnershipStatisticsContent() {
                       <p className="text-xs text-gray-700 mt-1">
                         vs {match.opponents}
                       </p>
-                      <p className="text-xs text-gray-600 mt-1">Score: {match.score}</p>
+                      <p className="text-xs text-gray-600 mt-1">
+                        Set {match.setNumber || 1}: {match.score}
+                      </p>
                     </div>
                   ))}
                 </div>

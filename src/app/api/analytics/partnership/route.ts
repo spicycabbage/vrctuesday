@@ -80,11 +80,7 @@ export async function GET(request: NextRequest) {
         (teamPlayer1Id === p1.id && teamPlayer2Id === p2.id) ||
         (teamPlayer1Id === p2.id && teamPlayer2Id === p1.id);
 
-      if (!playedTogether || !match.match_winner) return;
-
-      const won = match.match_winner === teamNumber;
-      if (won) wins++;
-      else losses++;
+      if (!playedTogether) return;
 
       // Get opponents
       const oppTeam = isTeam1 ? 2 : 1;
@@ -94,13 +90,37 @@ export async function GET(request: NextRequest) {
       const opp1 = allPlayers.find((p: any) => p.id === opp1Id && p.team_number === oppTeam);
       const opp2 = allPlayers.find((p: any) => p.id === opp2Id && p.team_number === oppTeam);
 
-      matchDetails.push({
-        won,
-        matchType: match.match_type,
-        opponents: `${opp1?.name || '?'} / ${opp2?.name || '?'}`,
-        score: `${match.set1_team1_score}-${match.set1_team2_score}, ${match.set2_team1_score}-${match.set2_team2_score}`,
-        date: tournamentDateMap[match.tournament_id]
-      });
+      // Count Set 1 separately
+      if (match.set1_winner) {
+        const wonSet1 = match.set1_winner === teamNumber;
+        if (wonSet1) wins++;
+        else losses++;
+
+        matchDetails.push({
+          won: wonSet1,
+          matchType: match.match_type,
+          opponents: `${opp1?.name || '?'} / ${opp2?.name || '?'}`,
+          score: `${match.set1_team1_score}-${match.set1_team2_score}`,
+          date: tournamentDateMap[match.tournament_id],
+          setNumber: 1
+        });
+      }
+
+      // Count Set 2 separately
+      if (match.set2_winner) {
+        const wonSet2 = match.set2_winner === teamNumber;
+        if (wonSet2) wins++;
+        else losses++;
+
+        matchDetails.push({
+          won: wonSet2,
+          matchType: match.match_type,
+          opponents: `${opp1?.name || '?'} / ${opp2?.name || '?'}`,
+          score: `${match.set2_team1_score}-${match.set2_team2_score}`,
+          date: tournamentDateMap[match.tournament_id],
+          setNumber: 2
+        });
+      }
     });
 
     const total = wins + losses;
