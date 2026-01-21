@@ -33,6 +33,11 @@ export default function CreateTournament() {
   const suggestionsRef = useRef<HTMLDivElement>(null);
   const inputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
 
+  // Check if all fields are filled
+  const allFieldsFilled = team1Players.every(p => p && p.trim()) && 
+                          team2Players.every(p => p && p.trim()) && 
+                          accessCode.trim();
+
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (suggestionsRef.current && !suggestionsRef.current.contains(e.target as Node)) {
@@ -143,6 +148,7 @@ export default function CreateTournament() {
 
   const updateTeam1Player = (index: number, value: string) => {
     const newPlayers = [...team1Players];
+    // Keep the value as-is while typing, only trim on blur
     newPlayers[index] = value;
     setTeam1Players(newPlayers);
     checkDuplicates(newPlayers, team2Players);
@@ -150,9 +156,22 @@ export default function CreateTournament() {
 
   const updateTeam2Player = (index: number, value: string) => {
     const newPlayers = [...team2Players];
+    // Keep the value as-is while typing, only trim on blur
     newPlayers[index] = value;
     setTeam2Players(newPlayers);
     checkDuplicates(team1Players, newPlayers);
+  };
+
+  const handleBlur = (team: 1 | 2, index: number) => {
+    if (team === 1) {
+      const newPlayers = [...team1Players];
+      newPlayers[index] = newPlayers[index].trim();
+      setTeam1Players(newPlayers);
+    } else {
+      const newPlayers = [...team2Players];
+      newPlayers[index] = newPlayers[index].trim();
+      setTeam2Players(newPlayers);
+    }
   };
 
   const getSuggestions = (value: string, playerList: string[]) => {
@@ -183,6 +202,7 @@ export default function CreateTournament() {
     const updateFn = team === 1 ? updateTeam1Player : updateTeam2Player;
     const suggestions = getSuggestions(value, playerList);
     const isOpen = showSuggestions === fieldId;
+    const isEmpty = !value || !value.trim();
 
     return (
       <div key={index} className="relative">
@@ -192,7 +212,10 @@ export default function CreateTournament() {
           value={value || ''}
           onChange={(e) => updateFn(index, e.target.value)}
           onFocus={() => setShowSuggestions(fieldId)}
-          className="w-full px-3 py-2 border border-gray-300 rounded focus:border-blue-500 focus:outline-none text-sm"
+          onBlur={() => handleBlur(team, index)}
+          className={`w-full px-3 py-2 border rounded focus:outline-none text-sm ${
+            isEmpty ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-blue-500'
+          }`}
           placeholder={label}
           autoComplete="off"
         />
@@ -291,7 +314,7 @@ export default function CreateTournament() {
 
           <button
             type="submit"
-            disabled={loading || !!duplicateWarning}
+            disabled={loading || !!duplicateWarning || !allFieldsFilled}
             className="w-full bg-blue-600 text-white py-4 rounded-lg font-semibold hover:bg-blue-700 transition disabled:bg-gray-400"
           >
             {loading ? 'Creating...' : 'Create Tournament'}
