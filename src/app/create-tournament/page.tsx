@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 const WOMEN_PLAYERS = ['Ivy', 'Vlo', 'Karen', 'Joanne', 'Valerie', 'Anna', 'Elisha', 'Crystal', 'Misaki', 'Jenna'];
@@ -29,18 +29,6 @@ export default function CreateTournament() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showDropdown, setShowDropdown] = useState<string | null>(null); // "team1-0", "team2-3", etc.
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setShowDropdown(null);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
 
   // Get available players (not already selected)
   const getAvailablePlayers = (index: number, isTeam1: boolean, isWomen: boolean) => {
@@ -190,7 +178,7 @@ export default function CreateTournament() {
     const filteredPlayers = getFilteredPlayers(index, isTeam1, isWomen);
 
     return (
-      <div className="relative" ref={isOpen ? dropdownRef : null}>
+      <div className="relative">
         <input
           type="text"
           value={value}
@@ -200,23 +188,40 @@ export default function CreateTournament() {
             } else {
               updateTeam2Player(index, e.target.value);
             }
+            // Keep dropdown open while typing
+            if (!isOpen) {
+              setShowDropdown(dropdownId);
+            }
           }}
           onFocus={() => handleInputFocus(team, index)}
+          onBlur={() => {
+            // Small delay to allow clicking dropdown items
+            setTimeout(() => setShowDropdown(null), 150);
+          }}
           className="w-full px-3 py-2 border border-gray-300 rounded focus:border-blue-500 focus:outline-none text-sm"
           placeholder={label}
         />
-        {isOpen && filteredPlayers.length > 0 && (
+        {isOpen && (
           <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-y-auto">
-            {filteredPlayers.map((name) => (
-              <button
-                key={name}
-                type="button"
-                onClick={() => handleSelectPlayer(team, index, name)}
-                className="w-full text-left px-3 py-2 hover:bg-blue-100 text-sm"
-              >
-                {name}
-              </button>
-            ))}
+            {filteredPlayers.length > 0 ? (
+              filteredPlayers.map((name) => (
+                <button
+                  key={name}
+                  type="button"
+                  onMouseDown={(e) => {
+                    e.preventDefault(); // Prevent blur
+                    handleSelectPlayer(team, index, name);
+                  }}
+                  className="w-full text-left px-3 py-2 hover:bg-blue-100 text-sm"
+                >
+                  {name}
+                </button>
+              ))
+            ) : (
+              <div className="px-3 py-2 text-sm text-gray-500">
+                Type to search or enter custom name
+              </div>
+            )}
           </div>
         )}
       </div>
