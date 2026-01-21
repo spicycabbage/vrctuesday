@@ -44,33 +44,33 @@ export async function updateMatchScore(
 export async function saveTournament(tournament: Tournament): Promise<void> {
   await ensureSchema();
 
-  // Use a transaction-like approach with Promise.all for parallel execution
-  await Promise.all([
-    // Insert or update tournament
-    sql`
-      insert into team_tournaments (
-        id, access_code, date, team1_name, team2_name,
-        team1_sets_won, team2_sets_won, team1_total_points, team2_total_points,
-        tournament_winner, is_finalized, created_at
-      ) values (
-        ${tournament.id}, ${tournament.accessCode}, ${tournament.date},
-        ${tournament.team1Name}, ${tournament.team2Name},
-        ${tournament.team1SetsWon}, ${tournament.team2SetsWon},
-        ${tournament.team1TotalPoints}, ${tournament.team2TotalPoints},
-        ${tournament.tournamentWinner}, ${tournament.isFinalized},
-        ${tournament.createdAt.toISOString()}
-      )
-      on conflict (id) do update set
-        team1_name = excluded.team1_name,
-        team2_name = excluded.team2_name,
-        team1_sets_won = excluded.team1_sets_won,
-        team2_sets_won = excluded.team2_sets_won,
-        team1_total_points = excluded.team1_total_points,
-        team2_total_points = excluded.team2_total_points,
-        tournament_winner = excluded.tournament_winner,
-        is_finalized = excluded.is_finalized
-    `,
+  // First, insert/update the tournament (must complete before foreign key references)
+  await sql`
+    insert into team_tournaments (
+      id, access_code, date, team1_name, team2_name,
+      team1_sets_won, team2_sets_won, team1_total_points, team2_total_points,
+      tournament_winner, is_finalized, created_at
+    ) values (
+      ${tournament.id}, ${tournament.accessCode}, ${tournament.date},
+      ${tournament.team1Name}, ${tournament.team2Name},
+      ${tournament.team1SetsWon}, ${tournament.team2SetsWon},
+      ${tournament.team1TotalPoints}, ${tournament.team2TotalPoints},
+      ${tournament.tournamentWinner}, ${tournament.isFinalized},
+      ${tournament.createdAt.toISOString()}
+    )
+    on conflict (id) do update set
+      team1_name = excluded.team1_name,
+      team2_name = excluded.team2_name,
+      team1_sets_won = excluded.team1_sets_won,
+      team2_sets_won = excluded.team2_sets_won,
+      team1_total_points = excluded.team1_total_points,
+      team2_total_points = excluded.team2_total_points,
+      tournament_winner = excluded.tournament_winner,
+      is_finalized = excluded.is_finalized
+  `;
 
+  // Then, insert players and matches in parallel (now safe because tournament exists)
+  await Promise.all([
     // Batch insert team 1 players
     ...tournament.team1Players.map(player =>
       sql`
