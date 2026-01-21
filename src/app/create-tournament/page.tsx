@@ -28,6 +28,7 @@ export default function CreateTournament() {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [duplicateWarning, setDuplicateWarning] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -110,16 +111,29 @@ export default function CreateTournament() {
     }
   };
 
+  const checkDuplicates = (team1: string[], team2: string[]) => {
+    const allNames = [...team1, ...team2].map(n => n.trim().toLowerCase()).filter(n => n);
+    const duplicates = allNames.filter((name, index) => allNames.indexOf(name) !== index);
+    
+    if (duplicates.length > 0) {
+      setDuplicateWarning(`⚠️ Duplicate player name detected`);
+    } else {
+      setDuplicateWarning('');
+    }
+  };
+
   const updateTeam1Player = (index: number, value: string) => {
     const newPlayers = [...team1Players];
     newPlayers[index] = value;
     setTeam1Players(newPlayers);
+    checkDuplicates(newPlayers, team2Players);
   };
 
   const updateTeam2Player = (index: number, value: string) => {
     const newPlayers = [...team2Players];
     newPlayers[index] = value;
     setTeam2Players(newPlayers);
+    checkDuplicates(team1Players, newPlayers);
   };
 
 
@@ -255,6 +269,12 @@ export default function CreateTournament() {
             </div>
           </div>
 
+          {duplicateWarning && (
+            <div className="bg-yellow-100 border border-yellow-400 text-yellow-800 px-4 py-3 rounded">
+              {duplicateWarning}
+            </div>
+          )}
+
           {error && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
               {error}
@@ -263,7 +283,7 @@ export default function CreateTournament() {
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || !!duplicateWarning}
             className="w-full bg-blue-600 text-white py-4 rounded-lg font-semibold hover:bg-blue-700 transition disabled:bg-gray-400"
           >
             {loading ? 'Creating...' : 'Create Tournament'}
