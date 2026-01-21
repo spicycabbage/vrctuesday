@@ -56,27 +56,27 @@ function AdvancedAnalyticsContent() {
       
       // Calculate head-to-head records
       const playersWithH2H = data.map((player: PlayerStats) => {
-        const h2hMap: { [opponent: string]: { wins: number; losses: number; margins: number[] } } = {};
+        const h2hMap: { [opponentPair: string]: { wins: number; losses: number; margins: number[] } } = {};
         
         player.details.forEach((detail) => {
-          // Parse opponents
-          const opponents = detail.opponents.split(' / ');
-          opponents.forEach((opp) => {
-            if (!h2hMap[opp]) {
-              h2hMap[opp] = { wins: 0, losses: 0, margins: [] };
-            }
-            
-            if (detail.won) {
-              h2hMap[opp].wins++;
-            } else {
-              h2hMap[opp].losses++;
-            }
-            
-            // Calculate margin (difference in set scores) - now each detail is one set
-            const [s1, s2] = detail.score.split('-').map(Number);
-            const margin = detail.won ? (s1 - s2) : (s2 - s1);
-            h2hMap[opp].margins.push(margin);
-          });
+          // Use the opponent pair as the key (not individual opponents)
+          const opponentPair = detail.opponents;
+          
+          if (!h2hMap[opponentPair]) {
+            h2hMap[opponentPair] = { wins: 0, losses: 0, margins: [] };
+          }
+          
+          // Count each set once per opponent pair
+          if (detail.won) {
+            h2hMap[opponentPair].wins++;
+          } else {
+            h2hMap[opponentPair].losses++;
+          }
+          
+          // Calculate margin
+          const [s1, s2] = detail.score.split('-').map(Number);
+          const margin = detail.won ? (s1 - s2) : (s2 - s1);
+          h2hMap[opponentPair].margins.push(margin);
         });
         
         // Convert to array
