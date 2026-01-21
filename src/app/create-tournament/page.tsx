@@ -187,7 +187,7 @@ export default function CreateTournament() {
     return (
       <div key={index} className="relative">
         <input
-          ref={el => inputRefs.current[fieldId] = el}
+          ref={el => { inputRefs.current[fieldId] = el; }}
           type="text"
           value={value || ''}
           onChange={(e) => updateFn(index, e.target.value)}
