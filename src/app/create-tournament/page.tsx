@@ -28,31 +28,6 @@ export default function CreateTournament() {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [showDropdown, setShowDropdown] = useState<string | null>(null); // "team1-0", "team2-3", etc.
-
-  // Get available players (not already selected)
-  const getAvailablePlayers = (index: number, isTeam1: boolean, isWomen: boolean) => {
-    const selectedPlayers = isTeam1 ? team1Players : team2Players;
-    const otherTeamPlayers = isTeam1 ? team2Players : team1Players;
-    const allSelected = [...selectedPlayers, ...otherTeamPlayers].filter(p => p);
-    const playerList = isWomen ? WOMEN_PLAYERS : MEN_PLAYERS;
-    
-    return playerList.filter(name => 
-      !allSelected.includes(name) || selectedPlayers[index] === name
-    );
-  };
-
-  // Get filtered players based on input
-  const getFilteredPlayers = (index: number, isTeam1: boolean, isWomen: boolean) => {
-    const currentValue = isTeam1 ? team1Players[index] : team2Players[index];
-    const available = getAvailablePlayers(index, isTeam1, isWomen);
-    
-    if (!currentValue) return available;
-    
-    return available.filter(name => 
-      name.toLowerCase().startsWith(currentValue.toLowerCase())
-    );
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -147,86 +122,6 @@ export default function CreateTournament() {
     setTeam2Players(newPlayers);
   };
 
-  const handleInputFocus = (team: number, index: number) => {
-    setShowDropdown(`team${team}-${index}`);
-  };
-
-  const handleSelectPlayer = (team: number, index: number, name: string) => {
-    if (team === 1) {
-      updateTeam1Player(index, name);
-    } else {
-      updateTeam2Player(index, name);
-    }
-    setShowDropdown(null);
-  };
-
-  const PlayerInput = ({ 
-    team, 
-    index, 
-    isWomen, 
-    label 
-  }: { 
-    team: number; 
-    index: number; 
-    isWomen: boolean; 
-    label: string;
-  }) => {
-    const isTeam1 = team === 1;
-    const value = isTeam1 ? team1Players[index] : team2Players[index];
-    const dropdownId = `team${team}-${index}`;
-    const isOpen = showDropdown === dropdownId;
-    const filteredPlayers = getFilteredPlayers(index, isTeam1, isWomen);
-
-    return (
-      <div className="relative">
-        <input
-          type="text"
-          value={value}
-          onChange={(e) => {
-            if (isTeam1) {
-              updateTeam1Player(index, e.target.value);
-            } else {
-              updateTeam2Player(index, e.target.value);
-            }
-            // Keep dropdown open while typing
-            if (!isOpen) {
-              setShowDropdown(dropdownId);
-            }
-          }}
-          onFocus={() => handleInputFocus(team, index)}
-          onBlur={() => {
-            // Small delay to allow clicking dropdown items
-            setTimeout(() => setShowDropdown(null), 150);
-          }}
-          className="w-full px-3 py-2 border border-gray-300 rounded focus:border-blue-500 focus:outline-none text-sm"
-          placeholder={label}
-        />
-        {isOpen && (
-          <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-y-auto">
-            {filteredPlayers.length > 0 ? (
-              filteredPlayers.map((name) => (
-                <button
-                  key={name}
-                  type="button"
-                  onMouseDown={(e) => {
-                    e.preventDefault(); // Prevent blur
-                    handleSelectPlayer(team, index, name);
-                  }}
-                  className="w-full text-left px-3 py-2 hover:bg-blue-100 text-sm"
-                >
-                  {name}
-                </button>
-              ))
-            ) : (
-              <div className="px-3 py-2 text-sm text-gray-500">
-                Type to search or enter custom name
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-    );
-  };
 
   return (
     <div className="mobile-container safe-area-inset-top safe-area-inset-bottom pb-8">
@@ -265,13 +160,47 @@ export default function CreateTournament() {
             <div className="space-y-2">
               <p className="text-xs font-semibold text-gray-600 mb-1">Women Players</p>
               {[0, 1, 2].map((i) => (
-                <PlayerInput key={i} team={1} index={i} isWomen={true} label={`W${i + 1} name`} />
+                <input
+                  key={i}
+                  type="text"
+                  list={`team1-women-${i}`}
+                  value={team1Players[i] || ''}
+                  onChange={(e) => updateTeam1Player(i, e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded focus:border-blue-500 focus:outline-none text-sm"
+                  placeholder={`W${i + 1} name`}
+                />
               ))}
+              <datalist id="team1-women-0">
+                {WOMEN_PLAYERS.map(name => <option key={name} value={name} />)}
+              </datalist>
+              <datalist id="team1-women-1">
+                {WOMEN_PLAYERS.map(name => <option key={name} value={name} />)}
+              </datalist>
+              <datalist id="team1-women-2">
+                {WOMEN_PLAYERS.map(name => <option key={name} value={name} />)}
+              </datalist>
               
               <p className="text-xs font-semibold text-gray-600 mb-1 mt-3">Men Players</p>
               {[3, 4, 5].map((i) => (
-                <PlayerInput key={i} team={1} index={i} isWomen={false} label={`M${i - 2} name`} />
+                <input
+                  key={i}
+                  type="text"
+                  list={`team1-men-${i}`}
+                  value={team1Players[i] || ''}
+                  onChange={(e) => updateTeam1Player(i, e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded focus:border-blue-500 focus:outline-none text-sm"
+                  placeholder={`M${i - 2} name`}
+                />
               ))}
+              <datalist id="team1-men-3">
+                {MEN_PLAYERS.map(name => <option key={name} value={name} />)}
+              </datalist>
+              <datalist id="team1-men-4">
+                {MEN_PLAYERS.map(name => <option key={name} value={name} />)}
+              </datalist>
+              <datalist id="team1-men-5">
+                {MEN_PLAYERS.map(name => <option key={name} value={name} />)}
+              </datalist>
             </div>
           </div>
 
@@ -282,13 +211,47 @@ export default function CreateTournament() {
             <div className="space-y-2">
               <p className="text-xs font-semibold text-gray-600 mb-1">Women Players</p>
               {[0, 1, 2].map((i) => (
-                <PlayerInput key={i} team={2} index={i} isWomen={true} label={`W${i + 1} name`} />
+                <input
+                  key={i}
+                  type="text"
+                  list={`team2-women-${i}`}
+                  value={team2Players[i] || ''}
+                  onChange={(e) => updateTeam2Player(i, e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded focus:border-blue-500 focus:outline-none text-sm"
+                  placeholder={`W${i + 1} name`}
+                />
               ))}
+              <datalist id="team2-women-0">
+                {WOMEN_PLAYERS.map(name => <option key={name} value={name} />)}
+              </datalist>
+              <datalist id="team2-women-1">
+                {WOMEN_PLAYERS.map(name => <option key={name} value={name} />)}
+              </datalist>
+              <datalist id="team2-women-2">
+                {WOMEN_PLAYERS.map(name => <option key={name} value={name} />)}
+              </datalist>
               
               <p className="text-xs font-semibold text-gray-600 mb-1 mt-3">Men Players</p>
               {[3, 4, 5].map((i) => (
-                <PlayerInput key={i} team={2} index={i} isWomen={false} label={`M${i - 2} name`} />
+                <input
+                  key={i}
+                  type="text"
+                  list={`team2-men-${i}`}
+                  value={team2Players[i] || ''}
+                  onChange={(e) => updateTeam2Player(i, e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded focus:border-blue-500 focus:outline-none text-sm"
+                  placeholder={`M${i - 2} name`}
+                />
               ))}
+              <datalist id="team2-men-3">
+                {MEN_PLAYERS.map(name => <option key={name} value={name} />)}
+              </datalist>
+              <datalist id="team2-men-4">
+                {MEN_PLAYERS.map(name => <option key={name} value={name} />)}
+              </datalist>
+              <datalist id="team2-men-5">
+                {MEN_PLAYERS.map(name => <option key={name} value={name} />)}
+              </datalist>
             </div>
           </div>
 
