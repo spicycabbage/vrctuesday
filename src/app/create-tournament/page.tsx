@@ -156,8 +156,18 @@ export default function CreateTournament() {
   };
 
   const getSuggestions = (value: string, playerList: string[]) => {
-    if (!value.trim()) return playerList;
-    return playerList.filter(name => 
+    // Get all selected names from both teams
+    const selectedNames = [...team1Players, ...team2Players]
+      .filter(name => name && name.trim())
+      .map(name => name.toLowerCase());
+    
+    // Filter out already selected names
+    const availableNames = playerList.filter(name => 
+      !selectedNames.includes(name.toLowerCase())
+    );
+    
+    if (!value.trim()) return availableNames;
+    return availableNames.filter(name => 
       name.toLowerCase().startsWith(value.toLowerCase())
     );
   };
