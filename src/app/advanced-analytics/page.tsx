@@ -14,6 +14,7 @@ interface PlayerDetail {
   opponent2: string;
   team1Score: number;
   team2Score: number;
+  setNumber?: number;
 }
 
 interface HeadToHead {
@@ -71,14 +72,10 @@ function AdvancedAnalyticsContent() {
               h2hMap[opp].losses++;
             }
             
-            // Calculate margin (difference in set scores)
-            const scores = detail.score.split(', ');
-            let totalMargin = 0;
-            scores.forEach((setScore) => {
-              const [s1, s2] = setScore.split('-').map(Number);
-              totalMargin += detail.won ? (s1 - s2) : (s2 - s1);
-            });
-            h2hMap[opp].margins.push(totalMargin);
+            // Calculate margin (difference in set scores) - now each detail is one set
+            const [s1, s2] = detail.score.split('-').map(Number);
+            const margin = detail.won ? (s1 - s2) : (s2 - s1);
+            h2hMap[opp].margins.push(margin);
           });
         });
         
@@ -227,7 +224,9 @@ function AdvancedAnalyticsContent() {
                             <p className="text-xs text-gray-700 mt-1">
                               vs {detail.opponents}
                             </p>
-                            <p className="text-xs text-gray-600 mt-1">Score: {detail.score}</p>
+                            <p className="text-xs text-gray-600 mt-1">
+                              Set {(detail as any).setNumber || 1}: {detail.score}
+                            </p>
                           </div>
                         ))}
                       </div>

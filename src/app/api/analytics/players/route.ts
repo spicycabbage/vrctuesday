@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
           ? (match.team1_player1_id === player.id || match.team1_player2_id === player.id)
           : (match.team2_player1_id === player.id || match.team2_player2_id === player.id);
 
-        if (!isInMatch || !match.match_winner) return;
+        if (!isInMatch) return;
 
         const playerName = player.name;
         if (!playerMap[playerName]) {
@@ -58,14 +58,7 @@ export async function GET(request: NextRequest) {
           };
         }
 
-        const won = match.match_winner === player.team_number;
-        if (won) {
-          playerMap[playerName].wins++;
-        } else {
-          playerMap[playerName].losses++;
-        }
-
-        // Get partner
+        // Get partner and opponents info (needed for both sets)
         const partnerId = isTeam1
           ? (match.team1_player1_id === player.id ? match.team1_player2_id : match.team1_player1_id)
           : (match.team2_player1_id === player.id ? match.team2_player2_id : match.team2_player1_id);
@@ -74,7 +67,6 @@ export async function GET(request: NextRequest) {
           p.id === partnerId && p.team_number === player.team_number
         );
 
-        // Get opponents
         const oppTeam = isTeam1 ? 2 : 1;
         const opp1Id = isTeam1 ? match.team2_player1_id : match.team1_player1_id;
         const opp2Id = isTeam1 ? match.team2_player2_id : match.team1_player2_id;
@@ -82,18 +74,53 @@ export async function GET(request: NextRequest) {
         const opp1Data = teamPlayers.find((p: any) => p.id === opp1Id && p.team_number === oppTeam);
         const opp2Data = teamPlayers.find((p: any) => p.id === opp2Id && p.team_number === oppTeam);
 
-        playerMap[playerName].details.push({
-          won,
-          matchType: match.match_type,
-          partner: partnerData?.name || '?',
-          opponents: `${opp1Data?.name || '?'} / ${opp2Data?.name || '?'}`,
-          score: `${match.set1_team1_score}-${match.set1_team2_score}, ${match.set2_team1_score}-${match.set2_team2_score}`,
-          date: tournamentDateMap[match.tournament_id],
-          opponent1: opp1Data?.name || '?',
-          opponent2: opp2Data?.name || '?',
-          team1Score: (match.set1_team1_score || 0) + (match.set2_team1_score || 0),
-          team2Score: (match.set1_team2_score || 0) + (match.set2_team2_score || 0)
-        });
+        // Count Set 1
+        if (match.set1_winner) {
+          const wonSet1 = match.set1_winner === player.team_number;
+          if (wonSet1) {
+            playerMap[playerName].wins++;
+          } else {
+            playerMap[playerName].losses++;
+          }
+
+          playerMap[playerName].details.push({
+            won: wonSet1,
+            matchType: match.match_type,
+            partner: partnerData?.name || '?',
+            opponents: `${opp1Data?.name || '?'} / ${opp2Data?.name || '?'}`,
+            score: `${match.set1_team1_score}-${match.set1_team2_score}`,
+            date: tournamentDateMap[match.tournament_id],
+            opponent1: opp1Data?.name || '?',
+            opponent2: opp2Data?.name || '?',
+            team1Score: match.set1_team1_score || 0,
+            team2Score: match.set1_team2_score || 0,
+            setNumber: 1
+          });
+        }
+
+        // Count Set 2
+        if (match.set2_winner) {
+          const wonSet2 = match.set2_winner === player.team_number;
+          if (wonSet2) {
+            playerMap[playerName].wins++;
+          } else {
+            playerMap[playerName].losses++;
+          }
+
+          playerMap[playerName].details.push({
+            won: wonSet2,
+            matchType: match.match_type,
+            partner: partnerData?.name || '?',
+            opponents: `${opp1Data?.name || '?'} / ${opp2Data?.name || '?'}`,
+            score: `${match.set2_team1_score}-${match.set2_team2_score}`,
+            date: tournamentDateMap[match.tournament_id],
+            opponent1: opp1Data?.name || '?',
+            opponent2: opp2Data?.name || '?',
+            team1Score: match.set2_team1_score || 0,
+            team2Score: match.set2_team2_score || 0,
+            setNumber: 2
+          });
+        }
       });
     });
 
