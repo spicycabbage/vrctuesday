@@ -29,6 +29,7 @@ export default function CreateTournament() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [duplicateWarning, setDuplicateWarning] = useState('');
+  const [activeField, setActiveField] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -177,44 +178,26 @@ export default function CreateTournament() {
                 <input
                   key={i}
                   type="text"
-                  list={`team1-women-${i}`}
                   value={team1Players[i] || ''}
                   onChange={(e) => updateTeam1Player(i, e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded focus:border-blue-500 focus:outline-none text-sm"
                   placeholder={`W${i + 1} name`}
+                  autoComplete="off"
                 />
               ))}
-              <datalist id="team1-women-0">
-                {WOMEN_PLAYERS.map(name => <option key={name} value={name} />)}
-              </datalist>
-              <datalist id="team1-women-1">
-                {WOMEN_PLAYERS.map(name => <option key={name} value={name} />)}
-              </datalist>
-              <datalist id="team1-women-2">
-                {WOMEN_PLAYERS.map(name => <option key={name} value={name} />)}
-              </datalist>
               
               <p className="text-xs font-semibold text-gray-600 mb-1 mt-3">Men Players</p>
               {[3, 4, 5].map((i) => (
                 <input
                   key={i}
                   type="text"
-                  list={`team1-men-${i}`}
                   value={team1Players[i] || ''}
                   onChange={(e) => updateTeam1Player(i, e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded focus:border-blue-500 focus:outline-none text-sm"
                   placeholder={`M${i - 2} name`}
+                  autoComplete="off"
                 />
               ))}
-              <datalist id="team1-men-3">
-                {MEN_PLAYERS.map(name => <option key={name} value={name} />)}
-              </datalist>
-              <datalist id="team1-men-4">
-                {MEN_PLAYERS.map(name => <option key={name} value={name} />)}
-              </datalist>
-              <datalist id="team1-men-5">
-                {MEN_PLAYERS.map(name => <option key={name} value={name} />)}
-              </datalist>
             </div>
           </div>
 
@@ -228,44 +211,26 @@ export default function CreateTournament() {
                 <input
                   key={i}
                   type="text"
-                  list={`team2-women-${i}`}
                   value={team2Players[i] || ''}
                   onChange={(e) => updateTeam2Player(i, e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded focus:border-blue-500 focus:outline-none text-sm"
                   placeholder={`W${i + 1} name`}
+                  autoComplete="off"
                 />
               ))}
-              <datalist id="team2-women-0">
-                {WOMEN_PLAYERS.map(name => <option key={name} value={name} />)}
-              </datalist>
-              <datalist id="team2-women-1">
-                {WOMEN_PLAYERS.map(name => <option key={name} value={name} />)}
-              </datalist>
-              <datalist id="team2-women-2">
-                {WOMEN_PLAYERS.map(name => <option key={name} value={name} />)}
-              </datalist>
               
               <p className="text-xs font-semibold text-gray-600 mb-1 mt-3">Men Players</p>
               {[3, 4, 5].map((i) => (
                 <input
                   key={i}
                   type="text"
-                  list={`team2-men-${i}`}
                   value={team2Players[i] || ''}
                   onChange={(e) => updateTeam2Player(i, e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded focus:border-blue-500 focus:outline-none text-sm"
                   placeholder={`M${i - 2} name`}
+                  autoComplete="off"
                 />
               ))}
-              <datalist id="team2-men-3">
-                {MEN_PLAYERS.map(name => <option key={name} value={name} />)}
-              </datalist>
-              <datalist id="team2-men-4">
-                {MEN_PLAYERS.map(name => <option key={name} value={name} />)}
-              </datalist>
-              <datalist id="team2-men-5">
-                {MEN_PLAYERS.map(name => <option key={name} value={name} />)}
-              </datalist>
             </div>
           </div>
 
