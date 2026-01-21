@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 const WOMEN_PLAYERS = ['Ivy', 'Vlo', 'Karen', 'Joanne', 'Valerie', 'Anna', 'Elisha', 'Crystal', 'Misaki', 'Jenna'];
@@ -29,7 +29,25 @@ export default function CreateTournament() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [duplicateWarning, setDuplicateWarning] = useState('');
-  const [activeField, setActiveField] = useState<string | null>(null);
+  const [showSuggestions, setShowSuggestions] = useState<string | null>(null);
+  const suggestionsRef = useRef<HTMLDivElement>(null);
+  const inputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (suggestionsRef.current && !suggestionsRef.current.contains(e.target as Node)) {
+        // Check if click is on any input
+        const clickedInput = Object.values(inputRefs.current).some(
+          ref => ref && ref.contains(e.target as Node)
+        );
+        if (!clickedInput) {
+          setShowSuggestions(null);
+        }
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -137,6 +155,61 @@ export default function CreateTournament() {
     checkDuplicates(team1Players, newPlayers);
   };
 
+  const getSuggestions = (value: string, playerList: string[]) => {
+    if (!value.trim()) return playerList;
+    return playerList.filter(name => 
+      name.toLowerCase().startsWith(value.toLowerCase())
+    );
+  };
+
+  const renderPlayerInput = (
+    team: 1 | 2,
+    index: number,
+    label: string,
+    playerList: string[]
+  ) => {
+    const fieldId = `team${team}-${index}`;
+    const value = team === 1 ? team1Players[index] : team2Players[index];
+    const updateFn = team === 1 ? updateTeam1Player : updateTeam2Player;
+    const suggestions = getSuggestions(value, playerList);
+    const isOpen = showSuggestions === fieldId;
+
+    return (
+      <div key={index} className="relative">
+        <input
+          ref={el => inputRefs.current[fieldId] = el}
+          type="text"
+          value={value || ''}
+          onChange={(e) => updateFn(index, e.target.value)}
+          onFocus={() => setShowSuggestions(fieldId)}
+          className="w-full px-3 py-2 border border-gray-300 rounded focus:border-blue-500 focus:outline-none text-sm"
+          placeholder={label}
+          autoComplete="off"
+        />
+        {isOpen && suggestions.length > 0 && (
+          <div 
+            ref={suggestionsRef}
+            className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-y-auto"
+          >
+            {suggestions.map((name) => (
+              <button
+                key={name}
+                type="button"
+                onClick={() => {
+                  updateFn(index, name);
+                  setShowSuggestions(null);
+                }}
+                className="w-full text-left px-3 py-2 hover:bg-blue-100 text-sm"
+              >
+                {name}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
+
 
   return (
     <div className="mobile-container safe-area-inset-top safe-area-inset-bottom pb-8">
@@ -174,30 +247,10 @@ export default function CreateTournament() {
             
             <div className="space-y-2">
               <p className="text-xs font-semibold text-gray-600 mb-1">Women Players</p>
-              {[0, 1, 2].map((i) => (
-                <input
-                  key={i}
-                  type="text"
-                  value={team1Players[i] || ''}
-                  onChange={(e) => updateTeam1Player(i, e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded focus:border-blue-500 focus:outline-none text-sm"
-                  placeholder={`W${i + 1} name`}
-                  autoComplete="off"
-                />
-              ))}
+              {[0, 1, 2].map((i) => renderPlayerInput(1, i, `W${i + 1} name`, WOMEN_PLAYERS))}
               
               <p className="text-xs font-semibold text-gray-600 mb-1 mt-3">Men Players</p>
-              {[3, 4, 5].map((i) => (
-                <input
-                  key={i}
-                  type="text"
-                  value={team1Players[i] || ''}
-                  onChange={(e) => updateTeam1Player(i, e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded focus:border-blue-500 focus:outline-none text-sm"
-                  placeholder={`M${i - 2} name`}
-                  autoComplete="off"
-                />
-              ))}
+              {[3, 4, 5].map((i) => renderPlayerInput(1, i, `M${i - 2} name`, MEN_PLAYERS))}
             </div>
           </div>
 
@@ -207,30 +260,10 @@ export default function CreateTournament() {
             
             <div className="space-y-2">
               <p className="text-xs font-semibold text-gray-600 mb-1">Women Players</p>
-              {[0, 1, 2].map((i) => (
-                <input
-                  key={i}
-                  type="text"
-                  value={team2Players[i] || ''}
-                  onChange={(e) => updateTeam2Player(i, e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded focus:border-blue-500 focus:outline-none text-sm"
-                  placeholder={`W${i + 1} name`}
-                  autoComplete="off"
-                />
-              ))}
+              {[0, 1, 2].map((i) => renderPlayerInput(2, i, `W${i + 1} name`, WOMEN_PLAYERS))}
               
               <p className="text-xs font-semibold text-gray-600 mb-1 mt-3">Men Players</p>
-              {[3, 4, 5].map((i) => (
-                <input
-                  key={i}
-                  type="text"
-                  value={team2Players[i] || ''}
-                  onChange={(e) => updateTeam2Player(i, e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded focus:border-blue-500 focus:outline-none text-sm"
-                  placeholder={`M${i - 2} name`}
-                  autoComplete="off"
-                />
-              ))}
+              {[3, 4, 5].map((i) => renderPlayerInput(2, i, `M${i - 2} name`, MEN_PLAYERS))}
             </div>
           </div>
 
