@@ -69,6 +69,13 @@ function TournamentResultsContent() {
                 ? (tournament.tournamentWinner === 1 ? tournament.team1Name : tournament.team2Name)
                 : 'Incomplete';
               
+              // Format date as "Feb 9, 2026"
+              const formattedDate = new Date(tournament.date).toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric'
+              });
+              
               return (
                 <div key={tournament.id} className="max-w-full overflow-hidden">
                   <button
@@ -77,9 +84,8 @@ function TournamentResultsContent() {
                   >
                     <div className="flex justify-between items-center">
                       <div className="flex items-center gap-3">
-                        <div className="text-2xl">📅</div>
                         <div className="text-left">
-                          <p className="font-bold text-lg">{tournament.date}</p>
+                          <p className="font-bold text-lg">{formattedDate}</p>
                         </div>
                       </div>
                       <div className="text-right">

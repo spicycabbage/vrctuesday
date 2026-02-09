@@ -138,14 +138,14 @@ export default function MatchesTab({ matches, tournament, onScoreUpdate }: Match
             // EDIT MODE - Score entry form
             <div className="space-y-3">
               {/* Header row */}
-              <div className="flex items-center gap-2 text-xs font-bold text-gray-700">
+              <div className="flex items-center gap-1 text-xs font-bold text-gray-700">
                 <div className="flex-1">Players</div>
-                <div className="w-16 text-center">Set 1</div>
-                <div className="w-16 text-center">Set 2</div>
+                <div className="w-12 text-center">Set 1</div>
+                <div className="w-12 text-center">Set 2</div>
               </div>
 
               {/* Team 1 */}
-              <div className="flex items-center gap-2 p-2 bg-blue-50 rounded min-h-[44px]">
+              <div className="flex items-center gap-1 p-2 bg-blue-50 rounded min-h-[44px]">
                 <span className="text-sm flex-1">
                   {getPlayerName(1, match.team1Player1Id)} / {getPlayerName(1, match.team1Player2Id)}
                 </span>
@@ -153,7 +153,7 @@ export default function MatchesTab({ matches, tournament, onScoreUpdate }: Match
                   type="number"
                   value={set1Team1Score}
                   onChange={(e) => setSet1Team1Score(e.target.value)}
-                  className="w-16 h-[28px] px-2 border rounded text-center"
+                  className="w-12 h-[28px] px-1 border rounded text-center text-sm"
                   placeholder="0"
                   min="0"
                   max="30"
@@ -162,7 +162,7 @@ export default function MatchesTab({ matches, tournament, onScoreUpdate }: Match
                   type="number"
                   value={set2Team1Score}
                   onChange={(e) => setSet2Team1Score(e.target.value)}
-                  className="w-16 h-[28px] px-2 border rounded text-center"
+                  className="w-12 h-[28px] px-1 border rounded text-center text-sm"
                   placeholder="0"
                   min="0"
                   max="30"
@@ -170,7 +170,7 @@ export default function MatchesTab({ matches, tournament, onScoreUpdate }: Match
               </div>
 
               {/* Team 2 */}
-              <div className="flex items-center gap-2 p-2 bg-red-50 rounded min-h-[44px]">
+              <div className="flex items-center gap-1 p-2 bg-red-50 rounded min-h-[44px]">
                 <span className="text-sm flex-1">
                   {getPlayerName(2, match.team2Player1Id)} / {getPlayerName(2, match.team2Player2Id)}
                 </span>
@@ -178,7 +178,7 @@ export default function MatchesTab({ matches, tournament, onScoreUpdate }: Match
                   type="number"
                   value={set1Team2Score}
                   onChange={(e) => setSet1Team2Score(e.target.value)}
-                  className="w-16 h-[28px] px-2 border rounded text-center"
+                  className="w-12 h-[28px] px-1 border rounded text-center text-sm"
                   placeholder="0"
                   min="0"
                   max="30"
@@ -187,7 +187,7 @@ export default function MatchesTab({ matches, tournament, onScoreUpdate }: Match
                   type="number"
                   value={set2Team2Score}
                   onChange={(e) => setSet2Team2Score(e.target.value)}
-                  className="w-16 h-[28px] px-2 border rounded text-center"
+                  className="w-12 h-[28px] px-1 border rounded text-center text-sm"
                   placeholder="0"
                   min="0"
                   max="30"
@@ -217,34 +217,34 @@ export default function MatchesTab({ matches, tournament, onScoreUpdate }: Match
               {match.set1 || match.set2 ? (
                 <div className="space-y-3">
                   {/* Header row */}
-                  <div className="flex items-center gap-2 text-xs font-bold text-gray-700">
+                  <div className="flex items-center gap-1 text-xs font-bold text-gray-700">
                     <div className="flex-1">Players</div>
-                    <div className="w-16 text-center">Set 1</div>
-                    <div className="w-16 text-center">Set 2</div>
+                    <div className="w-12 text-center">Set 1</div>
+                    <div className="w-12 text-center">Set 2</div>
                   </div>
 
                   {/* Team 1 */}
-                  <div className="flex items-center gap-2 p-2 bg-blue-50 rounded min-h-[44px]">
+                  <div className="flex items-center gap-1 p-2 bg-blue-50 rounded min-h-[44px]">
                     <span className="text-sm flex-1">
                       {getPlayerName(1, match.team1Player1Id)} / {getPlayerName(1, match.team1Player2Id)}
                     </span>
-                    <div className={`w-16 h-[28px] flex items-center justify-center font-bold text-lg rounded ${match.set1?.winner === 1 ? 'bg-green-200' : ''}`}>
+                    <div className={`w-12 h-[28px] flex items-center justify-center font-bold text-base rounded ${match.set1?.winner === 1 ? 'bg-green-200' : ''}`}>
                       {match.set1?.team1Score ?? '-'}
                     </div>
-                    <div className={`w-16 h-[28px] flex items-center justify-center font-bold text-lg rounded ${match.set2?.winner === 1 ? 'bg-green-200' : ''}`}>
+                    <div className={`w-12 h-[28px] flex items-center justify-center font-bold text-base rounded ${match.set2?.winner === 1 ? 'bg-green-200' : ''}`}>
                       {match.set2?.team1Score ?? '-'}
                     </div>
                   </div>
 
                   {/* Team 2 */}
-                  <div className="flex items-center gap-2 p-2 bg-red-50 rounded min-h-[44px]">
+                  <div className="flex items-center gap-1 p-2 bg-red-50 rounded min-h-[44px]">
                     <span className="text-sm flex-1">
                       {getPlayerName(2, match.team2Player1Id)} / {getPlayerName(2, match.team2Player2Id)}
                     </span>
-                    <div className={`w-16 h-[28px] flex items-center justify-center font-bold text-lg rounded ${match.set1?.winner === 2 ? 'bg-green-200' : ''}`}>
+                    <div className={`w-12 h-[28px] flex items-center justify-center font-bold text-base rounded ${match.set1?.winner === 2 ? 'bg-green-200' : ''}`}>
                       {match.set1?.team2Score ?? '-'}
                     </div>
-                    <div className={`w-16 h-[28px] flex items-center justify-center font-bold text-lg rounded ${match.set2?.winner === 2 ? 'bg-green-200' : ''}`}>
+                    <div className={`w-12 h-[28px] flex items-center justify-center font-bold text-base rounded ${match.set2?.winner === 2 ? 'bg-green-200' : ''}`}>
                       {match.set2?.team2Score ?? '-'}
                     </div>
                   </div>
@@ -261,26 +261,26 @@ export default function MatchesTab({ matches, tournament, onScoreUpdate }: Match
               ) : (
                 <div className="space-y-3">
                   {/* Header row */}
-                  <div className="flex items-center gap-2 text-xs font-bold text-gray-700">
+                  <div className="flex items-center gap-1 text-xs font-bold text-gray-700">
                     <div className="flex-1">Players</div>
-                    <div className="w-16 text-center">Set 1</div>
-                    <div className="w-16 text-center">Set 2</div>
+                    <div className="w-12 text-center">Set 1</div>
+                    <div className="w-12 text-center">Set 2</div>
                   </div>
 
-                  <div className="flex items-center gap-2 p-2 bg-blue-50 rounded min-h-[44px]">
+                  <div className="flex items-center gap-1 p-2 bg-blue-50 rounded min-h-[44px]">
                     <span className="text-sm flex-1">
                       {getPlayerName(1, match.team1Player1Id)} / {getPlayerName(1, match.team1Player2Id)}
                     </span>
-                    <div className="w-16 h-[28px]"></div>
-                    <div className="w-16 h-[28px]"></div>
+                    <div className="w-12 h-[28px]"></div>
+                    <div className="w-12 h-[28px]"></div>
                   </div>
                   
-                  <div className="flex items-center gap-2 p-2 bg-red-50 rounded min-h-[44px]">
+                  <div className="flex items-center gap-1 p-2 bg-red-50 rounded min-h-[44px]">
                     <span className="text-sm flex-1">
                       {getPlayerName(2, match.team2Player1Id)} / {getPlayerName(2, match.team2Player2Id)}
                     </span>
-                    <div className="w-16 h-[28px]"></div>
-                    <div className="w-16 h-[28px]"></div>
+                    <div className="w-12 h-[28px]"></div>
+                    <div className="w-12 h-[28px]"></div>
                   </div>
 
                   <button

@@ -25,34 +25,34 @@ export default function ResultsTab({ tournament }: ResultsTabProps) {
 
             <div className="space-y-3">
               {/* Header row */}
-              <div className="flex items-center gap-2 text-xs font-bold text-gray-700">
+              <div className="flex items-center gap-1 text-xs font-bold text-gray-700">
                 <div className="flex-1 min-w-0">Players</div>
-                <div className="w-16 text-center flex-shrink-0">Set 1</div>
-                <div className="w-16 text-center flex-shrink-0">Set 2</div>
+                <div className="w-12 text-center flex-shrink-0">Set 1</div>
+                <div className="w-12 text-center flex-shrink-0">Set 2</div>
               </div>
 
               {/* Team 1 */}
-              <div className="flex items-center gap-2 p-2 bg-blue-50 rounded">
+              <div className="flex items-center gap-1 p-2 bg-blue-50 rounded">
                 <span className="text-sm flex-1 min-w-0 truncate">
                   {getPlayerName(1, match.team1Player1Id)} / {getPlayerName(1, match.team1Player2Id)}
                 </span>
-                <div className={`w-16 text-center font-bold text-lg rounded flex-shrink-0 ${match.set1?.winner === 1 ? 'bg-green-200' : ''}`}>
+                <div className={`w-12 text-center font-bold text-base rounded flex-shrink-0 ${match.set1?.winner === 1 ? 'bg-green-200' : ''}`}>
                   {match.set1?.team1Score ?? '-'}
                 </div>
-                <div className={`w-16 text-center font-bold text-lg rounded flex-shrink-0 ${match.set2?.winner === 1 ? 'bg-green-200' : ''}`}>
+                <div className={`w-12 text-center font-bold text-base rounded flex-shrink-0 ${match.set2?.winner === 1 ? 'bg-green-200' : ''}`}>
                   {match.set2?.team1Score ?? '-'}
                 </div>
               </div>
 
               {/* Team 2 */}
-              <div className="flex items-center gap-2 p-2 bg-red-50 rounded">
+              <div className="flex items-center gap-1 p-2 bg-red-50 rounded">
                 <span className="text-sm flex-1 min-w-0 truncate">
                   {getPlayerName(2, match.team2Player1Id)} / {getPlayerName(2, match.team2Player2Id)}
                 </span>
-                <div className={`w-16 text-center font-bold text-lg rounded flex-shrink-0 ${match.set1?.winner === 2 ? 'bg-green-200' : ''}`}>
+                <div className={`w-12 text-center font-bold text-base rounded flex-shrink-0 ${match.set1?.winner === 2 ? 'bg-green-200' : ''}`}>
                   {match.set1?.team2Score ?? '-'}
                 </div>
-                <div className={`w-16 text-center font-bold text-lg rounded flex-shrink-0 ${match.set2?.winner === 2 ? 'bg-green-200' : ''}`}>
+                <div className={`w-12 text-center font-bold text-base rounded flex-shrink-0 ${match.set2?.winner === 2 ? 'bg-green-200' : ''}`}>
                   {match.set2?.team2Score ?? '-'}
                 </div>
               </div>
