@@ -73,6 +73,7 @@ export async function GET(request: NextRequest) {
         
         const opp1Data = teamPlayers.find((p: any) => p.id === opp1Id && p.team_number === oppTeam);
         const opp2Data = teamPlayers.find((p: any) => p.id === opp2Id && p.team_number === oppTeam);
+        const oppNames = [opp1Data?.name || '?', opp2Data?.name || '?'].sort().join(' / ');
 
         // Count Set 1
         if (match.set1_winner) {
@@ -87,7 +88,7 @@ export async function GET(request: NextRequest) {
             won: wonSet1,
             matchType: match.match_type,
             partner: partnerData?.name || '?',
-            opponents: `${opp1Data?.name || '?'} / ${opp2Data?.name || '?'}`,
+            opponents: oppNames,
             score: `${match.set1_team1_score}-${match.set1_team2_score}`,
             date: tournamentDateMap[match.tournament_id],
             opponent1: opp1Data?.name || '?',
@@ -111,7 +112,7 @@ export async function GET(request: NextRequest) {
             won: wonSet2,
             matchType: match.match_type,
             partner: partnerData?.name || '?',
-            opponents: `${opp1Data?.name || '?'} / ${opp2Data?.name || '?'}`,
+            opponents: oppNames,
             score: `${match.set2_team1_score}-${match.set2_team2_score}`,
             date: tournamentDateMap[match.tournament_id],
             opponent1: opp1Data?.name || '?',

@@ -59,8 +59,11 @@ function AdvancedAnalyticsContent() {
         const h2hMap: { [opponentPair: string]: { wins: number; losses: number; margins: number[] } } = {};
         
         player.details.forEach((detail) => {
-          // Use the opponent pair as the key (not individual opponents)
-          const opponentPair = detail.opponents;
+          // Normalize opponent pair order so "A / B" and "B / A" map to the same key
+          const opponentPair = detail.opponents
+            .split(' / ')
+            .sort()
+            .join(' / ');
           
           if (!h2hMap[opponentPair]) {
             h2hMap[opponentPair] = { wins: 0, losses: 0, margins: [] };
