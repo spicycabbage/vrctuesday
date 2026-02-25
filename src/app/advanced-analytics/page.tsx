@@ -117,119 +117,119 @@ function AdvancedAnalyticsContent() {
 
   if (loading) {
     return (
-      <div className="mobile-container safe-area-inset-top">
-        <div className="tournament-card mt-12">
-          <p className="text-center text-gray-600">Loading analytics...</p>
+      <div className="mobile-container">
+        <div className="tournament-card mt-6">
+          <p className="text-center text-slate-500 text-sm">Loading analytics...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="mobile-container safe-area-inset-top safe-area-inset-bottom pb-8">
-      <div className="bg-white shadow-md p-4 mb-4">
-        <h1 className="text-2xl font-bold text-center text-gray-800">
-          Advanced Analytics
-        </h1>
-        <p className="text-center text-sm text-gray-600 mt-1">Player Win/Loss Records ({year})</p>
+    <div className="mobile-container safe-area-inset-bottom pb-8">
+      <div className="page-section-header">
+        <h1 className="text-lg font-bold text-center text-slate-800">Advanced Analytics</h1>
+        <p className="text-center text-xs text-slate-500 mt-0.5">Player records — {year === 'all' ? 'All Years' : year}</p>
       </div>
 
       <div className="px-4">
         {players.length === 0 ? (
-          <div className="bg-white rounded-lg shadow p-6 text-center">
-            <p className="text-gray-600 mb-4">No data available yet.</p>
+          <div className="bg-white rounded-xl border border-slate-200 p-6 text-center">
+            <p className="text-slate-500 text-sm">No data available yet.</p>
           </div>
         ) : (
           <div className="space-y-2">
             {players.map((player) => (
-              <div key={player.name} className="bg-white rounded-lg shadow overflow-hidden">
+              <div key={player.name} className="bg-white rounded-xl border border-slate-200 overflow-hidden">
                 <button
                   onClick={() => togglePlayer(player.name)}
-                  className="w-full p-4 hover:bg-gray-50 transition text-left"
+                  className="w-full px-4 py-3.5 hover:bg-slate-50 transition text-left"
                 >
                   <div className="flex justify-between items-center">
                     <div>
-                      <p className="font-bold text-gray-800">{player.name}</p>
-                      <p className="text-sm text-gray-600">
-                        {player.wins}W - {player.losses}L ({player.winRate}%)
+                      <p className="font-semibold text-slate-800">{player.name}</p>
+                      <p className="text-xs text-slate-500 mt-0.5">
+                        <span className="text-green-600 font-medium">{player.wins}W</span>
+                        {' – '}
+                        <span className="text-red-500 font-medium">{player.losses}L</span>
+                        {' · '}{player.winRate}%
                       </p>
                     </div>
-                    <div className="text-2xl text-gray-400">
-                      {expandedPlayer === player.name ? '−' : '+'}
-                    </div>
+                    <span className="text-slate-400 text-sm">{expandedPlayer === player.name ? '▲' : '▼'}</span>
                   </div>
                 </button>
 
                 {expandedPlayer === player.name && (
-                  <div className="p-4 bg-white border-t">
-                    {/* Toggle buttons */}
-                    <div className="flex gap-2 mb-4">
+                  <div className="px-4 pb-4 border-t border-slate-100">
+                    <div className="flex gap-1.5 my-3">
                       <button
                         onClick={() => setViewMode('h2h')}
-                        className={`flex-1 py-2 rounded font-semibold text-sm ${
-                          viewMode === 'h2h' 
-                            ? 'bg-blue-600 text-white' 
-                            : 'bg-gray-200 text-gray-700'
-                        }`}
+                        className={`flex-1 py-2 rounded-lg font-semibold text-xs ${
+                          viewMode === 'h2h'
+                            ? 'bg-slate-800 text-white'
+                            : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                        } transition`}
                       >
                         Head-to-Head
                       </button>
                       <button
                         onClick={() => setViewMode('matches')}
-                        className={`flex-1 py-2 rounded font-semibold text-sm ${
-                          viewMode === 'matches' 
-                            ? 'bg-blue-600 text-white' 
-                            : 'bg-gray-200 text-gray-700'
-                        }`}
+                        className={`flex-1 py-2 rounded-lg font-semibold text-xs ${
+                          viewMode === 'matches'
+                            ? 'bg-slate-800 text-white'
+                            : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                        } transition`}
                       >
                         Match Details
                       </button>
                     </div>
 
                     {viewMode === 'h2h' ? (
-                      <div className="bg-gray-50 rounded-lg overflow-hidden">
-                        <div className="grid grid-cols-5 gap-2 p-3 bg-gray-200 text-xs font-semibold text-gray-700">
+                      <div className="rounded-lg overflow-hidden border border-slate-200">
+                        <div className="grid grid-cols-5 gap-2 px-3 py-2 bg-slate-100 text-xs font-semibold text-slate-600">
                           <div className="col-span-2">Opponent</div>
                           <div className="text-center">W</div>
                           <div className="text-center">L</div>
                           <div className="text-center">Win%</div>
                         </div>
-                        {player.headToHead.map((h2h, idx) => (
-                          <div 
-                            key={idx} 
-                            className="grid grid-cols-5 gap-2 p-3 border-b border-gray-200 text-sm"
-                          >
-                            <div className="col-span-2 font-semibold text-gray-800">{h2h.opponent}</div>
-                            <div className="text-center font-bold text-green-600">{h2h.wins}</div>
-                            <div className="text-center font-bold text-red-600">{h2h.losses}</div>
-                            <div className="text-center font-bold text-green-600">{h2h.winRate}%</div>
-                          </div>
-                        ))}
+                        {player.headToHead.map((h2h, idx) => {
+                          const rate = parseInt(h2h.winRate);
+                          const rateColor = rate >= 60 ? 'text-green-600' : rate >= 40 ? 'text-slate-700' : 'text-red-500';
+                          return (
+                            <div
+                              key={idx}
+                              className="grid grid-cols-5 gap-2 px-3 py-2.5 border-t border-slate-100 text-xs"
+                            >
+                              <div className="col-span-2 font-medium text-slate-800">{h2h.opponent}</div>
+                              <div className="text-center font-semibold text-green-600">{h2h.wins}</div>
+                              <div className="text-center font-semibold text-red-500">{h2h.losses}</div>
+                              <div className={`text-center font-bold ${rateColor}`}>{h2h.winRate}%</div>
+                            </div>
+                          );
+                        })}
                       </div>
                     ) : (
                       <div className="space-y-2">
                         {player.details.map((detail, idx) => (
-                          <div 
-                            key={idx} 
-                            className={`p-3 rounded text-sm ${
-                              detail.won ? 'bg-green-100 border-l-4 border-green-500' : 'bg-red-100 border-l-4 border-red-500'
+                          <div
+                            key={idx}
+                            className={`px-3 py-2.5 rounded-lg text-xs border-l-4 ${
+                              detail.won
+                                ? 'bg-green-50 border-green-500'
+                                : 'bg-red-50 border-red-400'
                             }`}
                           >
                             <div className="flex justify-between items-start mb-1">
-                              <span className={`font-bold ${detail.won ? 'text-green-700' : 'text-red-700'}`}>
+                              <span className={`font-bold text-xs ${detail.won ? 'text-green-700' : 'text-red-600'}`}>
                                 {detail.won ? 'WIN' : 'LOSS'}
                               </span>
-                              <span className="text-xs text-gray-600">{detail.date}</span>
+                              <span className="text-slate-400">{detail.date}</span>
                             </div>
-                            <p className="text-xs text-gray-700">
-                              <span className="font-semibold">{detail.matchType}</span> • Partner: {detail.partner}
+                            <p className="text-slate-600">
+                              <span className="font-semibold">{detail.matchType}</span> · Partner: {detail.partner}
                             </p>
-                            <p className="text-xs text-gray-700 mt-1">
-                              vs {detail.opponents}
-                            </p>
-                            <p className="text-xs text-gray-600 mt-1">
-                              Set {(detail as any).setNumber || 1}: {detail.score}
-                            </p>
+                            <p className="text-slate-600 mt-0.5">vs {detail.opponents}</p>
+                            <p className="text-slate-400 mt-0.5">Set {(detail as any).setNumber || 1}: {detail.score}</p>
                           </div>
                         ))}
                       </div>
@@ -241,11 +241,8 @@ function AdvancedAnalyticsContent() {
           </div>
         )}
 
-        <button
-          onClick={() => router.push('/')}
-          className="w-full bg-gray-600 text-white py-3 rounded-lg font-semibold hover:bg-gray-700 transition mt-6"
-        >
-          Back to Home
+        <button onClick={() => router.push('/')} className="btn-back mt-6">
+          ← Back to Home
         </button>
       </div>
     </div>
@@ -254,7 +251,7 @@ function AdvancedAnalyticsContent() {
 
 export default function AdvancedAnalytics() {
   return (
-    <Suspense fallback={<div className="mobile-container safe-area-inset-top safe-area-inset-bottom"><div className="tournament-card mt-12"><p className="text-center text-gray-600">Loading...</p></div></div>}>
+    <Suspense fallback={<div className="mobile-container"><div className="tournament-card mt-6"><p className="text-center text-slate-500 text-sm">Loading...</p></div></div>}>
       <AdvancedAnalyticsContent />
     </Suspense>
   );

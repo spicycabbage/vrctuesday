@@ -11,7 +11,6 @@ export default function Home() {
   const [availableYears, setAvailableYears] = useState<string[]>([]);
 
   useEffect(() => {
-    // Load both in parallel without blocking UI
     Promise.all([
       fetch('/api/tournaments').then(res => res.ok ? res.json() : null).catch(() => null),
       fetch('/api/tournaments/years').then(res => res.ok ? res.json() : []).catch(() => [])
@@ -22,75 +21,94 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="mobile-container safe-area-inset-top safe-area-inset-bottom pb-4">
-      <h1 className="text-3xl md:text-4xl font-bold text-center my-4 md:my-8 text-gray-800">
-        VRC Tuesday
-      </h1>
+    <div className="mobile-container safe-area-inset-bottom pb-6">
 
-      {activeTournament ? (
-        // Active Tournament Card
-        <div className="tournament-card mb-4">
-          <button
-            onClick={() => router.push(`/tournament/${activeTournament.id}`)}
-            className="block w-full bg-black text-white text-center py-4 rounded-lg font-semibold hover:bg-gray-800 transition"
-          >
-            Tournament in Progress - Join
-          </button>
-
-          <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4 mt-4">
-            <p className="text-sm font-semibold text-gray-700">{activeTournament.team1Name} vs {activeTournament.team2Name}</p>
-            <p className="text-xs text-gray-600 mt-1">Score: {activeTournament.team1SetsWon} - {activeTournament.team2SetsWon}</p>
-          </div>
-        </div>
-      ) : (
-        // Create Tournament Card
-        <div className="tournament-card mb-4">
-          <Link 
-            href="/create-tournament"
-            className="block w-full bg-black text-white text-center py-4 rounded-lg font-semibold hover:bg-gray-800 transition"
-          >
-            Create New Tournament
-          </Link>
-        </div>
-      )}
-
-      {/* Historical/Analytics Card */}
+      {/* Active tournament banner or create CTA */}
       <div className="tournament-card">
-        <h2 className="text-xl font-semibold text-gray-700 mb-4">Filter by Year</h2>
-        <select 
-          value={selectedYear}
-          onChange={(e) => setSelectedYear(e.target.value)}
-          className="w-full p-3 mb-4 border-2 border-gray-300 rounded-lg bg-gray-100 text-lg font-semibold"
-        >
-          <option value="all">All Years</option>
-          {availableYears.map(year => (
-            <option key={year} value={year}>{year}</option>
-          ))}
-        </select>
-
-        <Link 
-          href={`/tournament-results?year=${selectedYear}`}
-          className="block w-full bg-blue-500 text-white text-center py-4 rounded-lg font-semibold hover:bg-blue-600 transition mb-3"
-        >
-          View Tournament Results
-        </Link>
-
-        <Link 
-          href={`/advanced-analytics?year=${selectedYear}`}
-          className="block w-full bg-purple-500 text-white text-center py-4 rounded-lg font-semibold hover:bg-purple-600 transition mb-3"
-        >
-          Advanced Analytics
-        </Link>
-
-        <button 
-          onClick={() => router.push(`/partnership-statistics?year=${selectedYear}`)}
-          className="block w-full bg-orange-500 text-white text-center py-4 rounded-lg font-semibold hover:bg-orange-600 transition"
-        >
-          Partnership Statistics
-        </button>
+        {activeTournament ? (
+          <>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="inline-block w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+              <span className="text-xs font-semibold text-green-700 uppercase tracking-wide">Live Tournament</span>
+            </div>
+            <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 mb-3 text-sm text-slate-700">
+              <p className="font-semibold">{activeTournament.team1Name} vs {activeTournament.team2Name}</p>
+              <p className="text-slate-500 mt-0.5">Score: {activeTournament.team1SetsWon} – {activeTournament.team2SetsWon}</p>
+            </div>
+            <button
+              onClick={() => router.push(`/tournament/${activeTournament.id}`)}
+              className="btn-primary"
+            >
+              Rejoin Tournament
+            </button>
+          </>
+        ) : (
+          <>
+            <p className="text-sm text-slate-500 mb-3">No active tournament</p>
+            <Link href="/create-tournament" className="btn-primary">
+              Create New Tournament
+            </Link>
+          </>
+        )}
       </div>
 
-      <p className="text-center text-gray-500 text-sm mt-6">Version 1.1</p>
+      {/* History & Analytics */}
+      <div className="tournament-card">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wider">History & Analytics</h2>
+        </div>
+
+        <div className="mb-4">
+          <label className="block text-xs font-semibold text-slate-600 mb-1.5">Filter by Year</label>
+          <select
+            value={selectedYear}
+            onChange={(e) => setSelectedYear(e.target.value)}
+            className="w-full px-3 py-2.5 border border-slate-300 rounded-lg bg-white text-sm font-medium text-slate-700 focus:outline-none focus:border-slate-500"
+          >
+            <option value="all">All Years</option>
+            {availableYears.map(year => (
+              <option key={year} value={year}>{year}</option>
+            ))}
+          </select>
+        </div>
+
+        <nav className="space-y-2">
+          <Link
+            href={`/tournament-results?year=${selectedYear}`}
+            className="flex items-center justify-between w-full px-4 py-3 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 transition"
+          >
+            <div>
+              <p className="font-semibold text-sm text-slate-800">Tournament Results</p>
+              <p className="text-xs text-slate-500 mt-0.5">Match history & scores</p>
+            </div>
+            <span className="text-slate-400 text-lg">›</span>
+          </Link>
+
+          <Link
+            href={`/advanced-analytics?year=${selectedYear}`}
+            className="flex items-center justify-between w-full px-4 py-3 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 transition"
+          >
+            <div>
+              <p className="font-semibold text-sm text-slate-800">Advanced Analytics</p>
+              <p className="text-xs text-slate-500 mt-0.5">Player win/loss & head-to-head</p>
+            </div>
+            <span className="text-slate-400 text-lg">›</span>
+          </Link>
+
+          <button
+            onClick={() => router.push(`/partnership-statistics?year=${selectedYear}`)}
+            className="flex items-center justify-between w-full px-4 py-3 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 transition text-left"
+          >
+            <div>
+              <p className="font-semibold text-sm text-slate-800">Partnership Statistics</p>
+              <p className="text-xs text-slate-500 mt-0.5">Doubles pair performance</p>
+            </div>
+            <span className="text-slate-400 text-lg">›</span>
+          </button>
+        </nav>
+      </div>
+
+      <p className="text-center text-slate-400 text-xs mt-2">v1.1</p>
     </div>
   );
 }

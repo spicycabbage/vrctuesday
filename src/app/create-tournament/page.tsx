@@ -245,69 +245,64 @@ export default function CreateTournament() {
 
 
   return (
-    <div className="mobile-container safe-area-inset-top safe-area-inset-bottom pb-8">
+    <div className="mobile-container safe-area-inset-bottom pb-8">
+      <div className="page-section-header">
+        <h1 className="text-lg font-bold text-center text-slate-800">Create Tournament</h1>
+      </div>
+
       <div className="tournament-card">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-xl font-bold text-gray-800">
-            Create Tournament
-          </h1>
+        <div className="flex items-center justify-between mb-5">
+          <label className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Date</label>
           <input
             type="date"
             value={tournamentDate}
             onChange={(e) => setTournamentDate(e.target.value)}
-            className="px-3 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none text-sm"
+            className="px-3 py-2 border border-slate-300 rounded-lg focus:border-slate-500 focus:outline-none text-sm text-slate-700 bg-white"
           />
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Access Code */}
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-semibold mb-2 text-gray-700">
+            <label className="block text-xs font-semibold mb-1.5 text-slate-600 uppercase tracking-wide">
               Access Code
             </label>
             <input
               type="text"
               value={accessCode}
               onChange={(e) => setAccessCode(e.target.value)}
-              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
+              className="w-full px-3 py-2.5 border border-slate-300 rounded-lg focus:border-slate-500 focus:outline-none text-sm text-slate-700"
               placeholder="Enter access code"
             />
           </div>
 
-          {/* Team 1 - Team A (fixed name) */}
           <div className="team-container team-1-bg">
-            <h3 className="text-sm font-semibold mb-3 text-gray-700">Team A</h3>
-            
+            <h3 className="text-xs font-semibold mb-3 text-slate-700 uppercase tracking-wide">Team A</h3>
             <div className="space-y-2">
-              <p className="text-xs font-semibold text-gray-600 mb-1">Women Players</p>
+              <p className="text-xs font-semibold text-slate-500 mb-1">Women</p>
               {[0, 1, 2].map((i) => renderPlayerInput(1, i, `W${i + 1} name`, WOMEN_PLAYERS))}
-              
-              <p className="text-xs font-semibold text-gray-600 mb-1 mt-3">Men Players</p>
+              <p className="text-xs font-semibold text-slate-500 mb-1 mt-3">Men</p>
               {[3, 4, 5].map((i) => renderPlayerInput(1, i, `M${i - 2} name`, MEN_PLAYERS))}
             </div>
           </div>
 
-          {/* Team 2 - Team B (fixed name) */}
           <div className="team-container team-2-bg">
-            <h3 className="text-sm font-semibold mb-3 text-gray-700">Team B</h3>
-            
+            <h3 className="text-xs font-semibold mb-3 text-slate-700 uppercase tracking-wide">Team B</h3>
             <div className="space-y-2">
-              <p className="text-xs font-semibold text-gray-600 mb-1">Women Players</p>
+              <p className="text-xs font-semibold text-slate-500 mb-1">Women</p>
               {[0, 1, 2].map((i) => renderPlayerInput(2, i, `W${i + 1} name`, WOMEN_PLAYERS))}
-              
-              <p className="text-xs font-semibold text-gray-600 mb-1 mt-3">Men Players</p>
+              <p className="text-xs font-semibold text-slate-500 mb-1 mt-3">Men</p>
               {[3, 4, 5].map((i) => renderPlayerInput(2, i, `M${i - 2} name`, MEN_PLAYERS))}
             </div>
           </div>
 
           {duplicateWarning && (
-            <div className="bg-yellow-100 border border-yellow-400 text-yellow-800 px-4 py-3 rounded">
+            <div className="bg-amber-50 border border-amber-300 text-amber-800 px-3 py-2.5 rounded-lg text-sm">
               {duplicateWarning}
             </div>
           )}
 
           {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+            <div className="bg-red-50 border border-red-300 text-red-700 px-3 py-2.5 rounded-lg text-sm">
               {error}
             </div>
           )}
@@ -315,15 +310,15 @@ export default function CreateTournament() {
           <button
             type="submit"
             disabled={loading || !!duplicateWarning || !allFieldsFilled}
-            className="w-full bg-blue-600 text-white py-4 rounded-lg font-semibold hover:bg-blue-700 transition disabled:bg-gray-400"
+            className="btn-primary"
           >
-            {loading ? 'Creating...' : 'Create Tournament'}
+            {loading ? 'Creating…' : 'Create Tournament'}
           </button>
 
           <button
             type="button"
             onClick={() => router.push('/')}
-            className="w-full bg-gray-300 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-400 transition"
+            className="btn-back"
           >
             Cancel
           </button>

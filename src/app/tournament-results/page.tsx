@@ -37,74 +37,64 @@ function TournamentResultsContent() {
 
   if (loading) {
     return (
-      <div className="mobile-container safe-area-inset-top">
-        <div className="tournament-card mt-12">
-          <p className="text-center text-gray-600">Loading history...</p>
+      <div className="mobile-container">
+        <div className="tournament-card mt-6">
+          <p className="text-center text-slate-500 text-sm">Loading history...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="mobile-container safe-area-inset-top safe-area-inset-bottom pb-8">
-      <div className="bg-white shadow-md p-4 mb-4">
-        <h1 className="text-2xl font-bold text-center text-gray-800">
-          Tournament History
-        </h1>
-        <p className="text-center text-sm text-gray-600 mt-1">
+    <div className="mobile-container safe-area-inset-bottom pb-8">
+      <div className="page-section-header">
+        <h1 className="text-lg font-bold text-center text-slate-800">Tournament History</h1>
+        <p className="text-center text-xs text-slate-500 mt-0.5">
           {tournaments.length} tournament{tournaments.length !== 1 ? 's' : ''} {year === 'all' ? 'total' : `in ${year}`}
         </p>
       </div>
 
       <div className="px-4">
         {tournaments.length === 0 ? (
-          <div className="bg-white rounded-lg shadow p-6 text-center">
-            <p className="text-gray-600 mb-4">No finalized tournaments yet.</p>
+          <div className="bg-white rounded-xl border border-slate-200 p-6 text-center">
+            <p className="text-slate-500 text-sm">No finalized tournaments yet.</p>
           </div>
         ) : (
-          <div className="space-y-3">
-            {tournaments.map((tournament, index) => {
+          <div className="space-y-2">
+            {tournaments.map((tournament) => {
               const isExpanded = expandedId === tournament.id;
-              const winnerName = tournament.tournamentWinner 
+              const winnerName = tournament.tournamentWinner
                 ? (tournament.tournamentWinner === 1 ? tournament.team1Name : tournament.team2Name)
                 : 'Incomplete';
-              
-              // Format date as "Feb 9, 2026"
+
               const formattedDate = new Date(tournament.date).toLocaleDateString('en-US', {
                 month: 'short',
                 day: 'numeric',
                 year: 'numeric'
               });
-              
+
               return (
-                <div key={tournament.id} className="max-w-full overflow-hidden">
+                <div key={tournament.id} className="overflow-hidden rounded-xl border border-slate-200">
                   <button
                     onClick={() => toggleExpand(tournament.id)}
-                    className="w-full p-4 rounded-lg text-white transition-colors bg-black hover:bg-gray-900"
+                    className="w-full px-4 py-3.5 bg-slate-800 hover:bg-slate-700 text-white transition-colors text-left"
                   >
                     <div className="flex justify-between items-center">
-                      <div className="flex items-center gap-3">
-                        <div className="text-left">
-                          <p className="font-bold text-lg">{formattedDate}</p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="flex items-center gap-2 justify-end">
-                          <span className="text-2xl">🏆</span>
-                          <span className="font-bold text-yellow-400 text-lg">{winnerName}</span>
-                        </div>
-                        <p className="text-sm opacity-80 mt-1">
-                          {tournament.team1SetsWon} - {tournament.team2SetsWon}
-                        </p>
+                      <p className="font-semibold text-sm">{formattedDate}</p>
+                      <div className="flex items-center gap-2">
+                        <span className="text-base">🏆</span>
+                        <span className="font-bold text-amber-400 text-sm">{winnerName}</span>
+                        <span className="text-slate-400 text-xs ml-1">
+                          {tournament.team1SetsWon}–{tournament.team2SetsWon}
+                        </span>
+                        <span className="text-slate-500 ml-1">{isExpanded ? '▲' : '▼'}</span>
                       </div>
                     </div>
                   </button>
 
                   {isExpanded && (
-                    <div className="mt-2 bg-white rounded-lg max-w-full">
-                      <div className="p-4">
-                        <ResultsTab tournament={tournament} />
-                      </div>
+                    <div className="bg-white p-4">
+                      <ResultsTab tournament={tournament} />
                     </div>
                   )}
                 </div>
@@ -115,9 +105,9 @@ function TournamentResultsContent() {
 
         <button
           onClick={() => router.push('/')}
-          className="w-full bg-gray-600 text-white py-3 rounded-lg font-semibold hover:bg-gray-700 transition mt-6"
+          className="btn-back mt-6"
         >
-          Back to Home
+          ← Back to Home
         </button>
       </div>
     </div>
@@ -126,7 +116,7 @@ function TournamentResultsContent() {
 
 export default function TournamentResults() {
   return (
-    <Suspense fallback={<div className="mobile-container safe-area-inset-top safe-area-inset-bottom"><div className="tournament-card mt-12"><p className="text-center text-gray-600">Loading...</p></div></div>}>
+    <Suspense fallback={<div className="mobile-container"><div className="tournament-card mt-6"><p className="text-center text-slate-500 text-sm">Loading...</p></div></div>}>
       <TournamentResultsContent />
     </Suspense>
   );

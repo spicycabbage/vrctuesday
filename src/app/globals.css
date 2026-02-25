@@ -16,10 +16,10 @@
   }
 }
 
-/* iPhone 16 Pro optimizations */
+/* iPhone safe area - applied to sticky header, not page body */
 @supports (padding: max(0px)) {
   .safe-area-inset-top {
-    padding-top: max(env(safe-area-inset-top), 1rem);
+    padding-top: max(env(safe-area-inset-top), 0px);
   }
   
   .safe-area-inset-bottom {
@@ -38,10 +38,58 @@
 
 .tournament-card {
   background: white;
-  border-radius: 1rem;
+  border-radius: 0.75rem;
   margin: 4% 4%;
-  padding: 6%;
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  padding: 5%;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.08), 0 1px 2px -1px rgb(0 0 0 / 0.06);
+  border: 1px solid rgb(226 232 240);
+}
+
+/* Consistent page section header */
+.page-section-header {
+  background: white;
+  border-bottom: 1px solid rgb(226 232 240);
+  padding: 0.875rem 1rem;
+  margin-bottom: 1rem;
+}
+
+/* Consistent back button */
+.btn-back {
+  width: 100%;
+  background: white;
+  border: 1px solid rgb(203 213 225);
+  color: rgb(71 85 105);
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  transition: background 0.15s;
+  cursor: pointer;
+}
+.btn-back:hover {
+  background: rgb(248 250 252);
+}
+
+/* Consistent primary action button */
+.btn-primary {
+  width: 100%;
+  background: rgb(30 41 59);
+  color: white;
+  padding: 0.875rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  transition: background 0.15s;
+  cursor: pointer;
+  text-align: center;
+  display: block;
+}
+.btn-primary:hover {
+  background: rgb(15 23 42);
+}
+.btn-primary:disabled {
+  background: rgb(148 163 184);
+  cursor: not-allowed;
 }
 
 .player-button {
