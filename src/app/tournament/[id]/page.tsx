@@ -84,7 +84,7 @@ export default function TournamentPage({ params }: { params: Promise<{ id: strin
       <div className="mobile-container">
         <div className="tournament-card mt-12">
           <h2 className="text-2xl font-bold text-red-600 mb-4">Error</h2>
-          <p className="text-indigo-700 mb-6">{error || 'Tournament not found'}</p>
+          <p className="text-blue-700 mb-6">{error || 'Tournament not found'}</p>
           <button onClick={() => router.push('/')} className="btn-primary">
             Go Home
           </button>
@@ -106,20 +106,20 @@ export default function TournamentPage({ params }: { params: Promise<{ id: strin
     <div className="mobile-container safe-area-inset-bottom pb-8">
       {/* Header */}
       <div className="page-section-header">
-        <p className="text-center text-xs text-indigo-500">{tournament.date} · Code: {tournament.accessCode}</p>
+        <p className="text-center text-xs text-gray-500">{tournament.date} · Code: {tournament.accessCode}</p>
 
         {/* Score Summary */}
         <div className="mt-3 flex justify-around items-center">
           <div className="text-center">
-            <p className="text-xs font-semibold text-indigo-700">{tournament.team1Name}</p>
-            <p className="text-3xl font-bold text-indigo-600">{tournament.team1SetsWon}</p>
-            <p className="text-xs text-indigo-400">{tournament.team1TotalPoints} pts</p>
+            <p className="text-xs font-semibold text-blue-700">{tournament.team1Name}</p>
+            <p className="text-3xl font-bold text-blue-700">{tournament.team1SetsWon}</p>
+            <p className="text-xs text-gray-400">{tournament.team1TotalPoints} pts</p>
           </div>
-          <div className="text-indigo-300 text-xl font-light">vs</div>
+          <div className="text-blue-300 text-xl font-light">vs</div>
           <div className="text-center">
             <p className="text-xs font-semibold text-red-600">{tournament.team2Name}</p>
             <p className="text-3xl font-bold text-red-500">{tournament.team2SetsWon}</p>
-            <p className="text-xs text-indigo-400">{tournament.team2TotalPoints} pts</p>
+            <p className="text-xs text-gray-400">{tournament.team2TotalPoints} pts</p>
           </div>
         </div>
 

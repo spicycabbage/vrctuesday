@@ -58,11 +58,7 @@ function AdvancedAnalyticsContent() {
         const h2hMap: { [opponentPair: string]: { wins: number; losses: number; margins: number[] } } = {};
 
         player.details.forEach((detail) => {
-          // Normalize opponent pair order so "A / B" and "B / A" map to the same key
-          const opponentPair = detail.opponents
-            .split(' / ')
-            .sort()
-            .join(' / ');
+          const opponentPair = detail.opponents.split(' / ').sort().join(' / ');
 
           if (!h2hMap[opponentPair]) {
             h2hMap[opponentPair] = { wins: 0, losses: 0, margins: [] };
@@ -75,8 +71,7 @@ function AdvancedAnalyticsContent() {
           }
 
           const [s1, s2] = detail.score.split('-').map(Number);
-          const margin = detail.won ? (s1 - s2) : (s2 - s1);
-          h2hMap[opponentPair].margins.push(margin);
+          h2hMap[opponentPair].margins.push(detail.won ? (s1 - s2) : (s2 - s1));
         });
 
         const headToHead = Object.entries(h2hMap).map(([opponent, stats]) => {
@@ -115,7 +110,7 @@ function AdvancedAnalyticsContent() {
     return (
       <div className="mobile-container">
         <div className="tournament-card mt-6">
-          <p className="text-center text-indigo-500 text-sm">Loading analytics…</p>
+          <p className="text-center text-gray-500 text-sm">Loading analytics…</p>
         </div>
       </div>
     );
@@ -125,49 +120,49 @@ function AdvancedAnalyticsContent() {
     <div className="mobile-container safe-area-inset-bottom pb-8">
       <div className="page-section-header">
         <div className="flex items-center justify-between">
-          <button onClick={() => router.push('/')} className="text-indigo-500 hover:text-indigo-700 text-2xl leading-none px-1">‹</button>
-          <h1 className="text-lg font-bold text-indigo-900">Advanced Analytics</h1>
-          <div className="w-16" />
+          <button onClick={() => router.push('/')} className="text-blue-600 hover:text-blue-800 text-2xl leading-none px-1">‹</button>
+          <h1 className="text-lg font-bold text-gray-900">Advanced Analytics</h1>
+          <div className="w-8" />
         </div>
-        <p className="text-center text-xs text-indigo-500 mt-0.5">Player records — {year === 'all' ? 'All Years' : year}</p>
+        <p className="text-center text-xs text-gray-500 mt-0.5">Player records — {year === 'all' ? 'All Years' : year}</p>
       </div>
 
       <div className="px-4">
         {players.length === 0 ? (
-          <div className="bg-white rounded-xl border border-indigo-200 p-6 text-center">
-            <p className="text-indigo-500 text-sm">No data available yet.</p>
+          <div className="bg-white rounded-xl border border-gray-200 p-6 text-center">
+            <p className="text-gray-500 text-sm">No data available yet.</p>
           </div>
         ) : (
           <div className="space-y-2">
             {players.map((player) => (
-              <div key={player.name} className="bg-white rounded-xl border border-indigo-200 overflow-hidden">
+              <div key={player.name} className="bg-white rounded-xl border border-gray-200 overflow-hidden">
                 <button
                   onClick={() => togglePlayer(player.name)}
-                  className="w-full px-4 py-3.5 hover:bg-indigo-50 transition text-left"
+                  className="w-full px-4 py-3.5 hover:bg-gray-50 transition text-left"
                 >
                   <div className="flex justify-between items-center">
                     <div>
-                      <p className="font-semibold text-indigo-900">{player.name}</p>
-                      <p className="text-xs text-indigo-500 mt-0.5">
+                      <p className="font-semibold text-gray-900">{player.name}</p>
+                      <p className="text-xs text-gray-500 mt-0.5">
                         <span className="text-green-600 font-medium">{player.wins}W</span>
                         {' – '}
                         <span className="text-red-500 font-medium">{player.losses}L</span>
                         {' · '}{player.winRate}%
                       </p>
                     </div>
-                    <span className="text-indigo-400 text-sm">{expandedPlayer === player.name ? '▲' : '▼'}</span>
+                    <span className="text-gray-400 text-sm">{expandedPlayer === player.name ? '▲' : '▼'}</span>
                   </div>
                 </button>
 
                 {expandedPlayer === player.name && (
-                  <div className="px-4 pb-4 border-t border-indigo-100">
+                  <div className="px-4 pb-4 border-t border-gray-100">
                     <div className="flex gap-1.5 my-3">
                       <button
                         onClick={() => setViewMode('h2h')}
                         className={`flex-1 py-2 rounded-lg font-semibold text-xs transition ${
                           viewMode === 'h2h'
-                            ? 'bg-indigo-600 text-white'
-                            : 'bg-indigo-100 text-indigo-700 hover:bg-indigo-200'
+                            ? 'bg-blue-700 text-white'
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                         }`}
                       >
                         Head-to-Head
@@ -176,8 +171,8 @@ function AdvancedAnalyticsContent() {
                         onClick={() => setViewMode('matches')}
                         className={`flex-1 py-2 rounded-lg font-semibold text-xs transition ${
                           viewMode === 'matches'
-                            ? 'bg-indigo-600 text-white'
-                            : 'bg-indigo-100 text-indigo-700 hover:bg-indigo-200'
+                            ? 'bg-blue-700 text-white'
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                         }`}
                       >
                         Match Details
@@ -185,8 +180,8 @@ function AdvancedAnalyticsContent() {
                     </div>
 
                     {viewMode === 'h2h' ? (
-                      <div className="rounded-lg overflow-hidden border border-indigo-200">
-                        <div className="grid grid-cols-5 gap-2 px-3 py-2 bg-indigo-100 text-xs font-semibold text-indigo-700">
+                      <div className="rounded-lg overflow-hidden border border-gray-200">
+                        <div className="grid grid-cols-5 gap-2 px-3 py-2 bg-gray-100 text-xs font-semibold text-gray-600">
                           <div className="col-span-2">Opponent</div>
                           <div className="text-center">W</div>
                           <div className="text-center">L</div>
@@ -194,13 +189,13 @@ function AdvancedAnalyticsContent() {
                         </div>
                         {player.headToHead.map((h2h, idx) => {
                           const rate = parseInt(h2h.winRate);
-                          const rateColor = rate >= 60 ? 'text-green-600' : rate >= 40 ? 'text-indigo-700' : 'text-red-500';
+                          const rateColor = rate >= 60 ? 'text-green-600' : rate >= 40 ? 'text-gray-700' : 'text-red-500';
                           return (
                             <div
                               key={idx}
-                              className="grid grid-cols-5 gap-2 px-3 py-2.5 border-t border-indigo-100 text-xs"
+                              className="grid grid-cols-5 gap-2 px-3 py-2.5 border-t border-gray-100 text-xs"
                             >
-                              <div className="col-span-2 font-medium text-indigo-900">{h2h.opponent}</div>
+                              <div className="col-span-2 font-medium text-gray-900">{h2h.opponent}</div>
                               <div className="text-center font-semibold text-green-600">{h2h.wins}</div>
                               <div className="text-center font-semibold text-red-500">{h2h.losses}</div>
                               <div className={`text-center font-bold ${rateColor}`}>{h2h.winRate}%</div>
@@ -214,22 +209,20 @@ function AdvancedAnalyticsContent() {
                           <div
                             key={idx}
                             className={`px-3 py-2.5 rounded-lg text-xs border-l-4 ${
-                              detail.won
-                                ? 'bg-green-50 border-green-500'
-                                : 'bg-red-50 border-red-400'
+                              detail.won ? 'bg-green-50 border-green-500' : 'bg-red-50 border-red-400'
                             }`}
                           >
                             <div className="flex justify-between items-start mb-1">
-                              <span className={`font-bold text-xs ${detail.won ? 'text-green-700' : 'text-red-600'}`}>
+                              <span className={`font-bold ${detail.won ? 'text-green-700' : 'text-red-600'}`}>
                                 {detail.won ? 'WIN' : 'LOSS'}
                               </span>
-                              <span className="text-indigo-400">{detail.date}</span>
+                              <span className="text-gray-400">{detail.date}</span>
                             </div>
-                            <p className="text-indigo-700">
+                            <p className="text-gray-700">
                               <span className="font-semibold">{detail.matchType}</span> · Partner: {detail.partner}
                             </p>
-                            <p className="text-indigo-700 mt-0.5">vs {detail.opponents}</p>
-                            <p className="text-indigo-400 mt-0.5">Set {(detail as any).setNumber || 1}: {detail.score}</p>
+                            <p className="text-gray-700 mt-0.5">vs {detail.opponents}</p>
+                            <p className="text-gray-400 mt-0.5">Set {(detail as any).setNumber || 1}: {detail.score}</p>
                           </div>
                         ))}
                       </div>
@@ -242,7 +235,7 @@ function AdvancedAnalyticsContent() {
         )}
 
         <button onClick={() => router.push('/')} className="btn-back mt-6">
-          ‹ to Home
+          ← Back to Home
         </button>
       </div>
     </div>
@@ -251,7 +244,7 @@ function AdvancedAnalyticsContent() {
 
 export default function AdvancedAnalytics() {
   return (
-    <Suspense fallback={<div className="mobile-container"><div className="tournament-card mt-6"><p className="text-center text-indigo-500 text-sm">Loading…</p></div></div>}>
+    <Suspense fallback={<div className="mobile-container"><div className="tournament-card mt-6"><p className="text-center text-gray-500 text-sm">Loading…</p></div></div>}>
       <AdvancedAnalyticsContent />
     </Suspense>
   );

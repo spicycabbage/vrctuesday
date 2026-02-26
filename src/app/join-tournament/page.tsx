@@ -34,20 +34,20 @@ export default function JoinTournament() {
   return (
     <div className="mobile-container safe-area-inset-bottom">
       <div className="page-section-header">
-        <h1 className="text-lg font-bold text-center text-indigo-900">Join Tournament</h1>
+        <h1 className="text-lg font-bold text-center text-gray-900">Join Tournament</h1>
       </div>
 
       <div className="tournament-card">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold mb-1.5 text-indigo-600 uppercase tracking-wide">
+            <label className="block text-xs font-semibold mb-1.5 text-gray-600 uppercase tracking-wide">
               Access Code
             </label>
             <input
               type="text"
               value={accessCode}
               onChange={(e) => setAccessCode(e.target.value)}
-              className="w-full px-3 py-3 border border-indigo-300 rounded-lg focus:border-indigo-500 focus:outline-none text-center text-2xl font-bold text-indigo-900 tracking-widest"
+              className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none text-center text-2xl font-bold text-gray-900 tracking-widest"
               placeholder="···"
               autoFocus
             />

@@ -40,11 +40,11 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
       </head>
-      <body className={`${inter.className} bg-indigo-50 min-h-screen`}>
-        <header className="bg-indigo-700 text-white sticky top-0 z-50 shadow-lg safe-area-inset-top">
+      <body className={`${inter.className} bg-gray-100 min-h-screen`}>
+        <header className="bg-blue-900 text-white sticky top-0 z-50 shadow-lg safe-area-inset-top">
           <div className="max-w-[428px] mx-auto flex items-center justify-between px-4 py-3">
             <span className="text-base font-bold tracking-tight">VRC Tuesday</span>
-            <span className="text-xs text-indigo-300 font-medium uppercase tracking-widest">Badminton</span>
+            <span className="text-xs text-blue-300 font-medium uppercase tracking-widest">Badminton</span>
           </div>
         </header>
         <div className="min-h-screen flex flex-col">
