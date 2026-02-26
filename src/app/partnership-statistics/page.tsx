@@ -40,7 +40,6 @@ function PartnershipStatisticsContent() {
     try {
       const response = await fetch('/api/analytics/all-players');
       if (!response.ok) throw new Error('Failed to fetch players');
-      
       const data = await response.json();
       setAllPlayers(data);
       setLoadingPlayers(false);
@@ -55,12 +54,10 @@ function PartnershipStatisticsContent() {
       alert('Please select both players');
       return;
     }
-
     setLoading(true);
     try {
       const response = await fetch(`/api/analytics/partnership?player1=${encodeURIComponent(player1)}&player2=${encodeURIComponent(player2)}&year=${year}`);
       if (!response.ok) throw new Error('Failed to fetch partnership stats');
-      
       const data = await response.json();
       setStats(data);
       setLoading(false);
@@ -71,14 +68,13 @@ function PartnershipStatisticsContent() {
     }
   };
 
-  // Get available players for second dropdown (exclude player1)
   const availablePlayer2 = allPlayers.filter(p => p !== player1);
 
   if (loadingPlayers) {
     return (
       <div className="mobile-container">
         <div className="tournament-card mt-6">
-          <p className="text-center text-slate-500 text-sm">Loading...</p>
+          <p className="text-center text-indigo-500 text-sm">Loading…</p>
         </div>
       </div>
     );
@@ -87,15 +83,15 @@ function PartnershipStatisticsContent() {
   return (
     <div className="mobile-container safe-area-inset-bottom pb-8">
       <div className="page-section-header">
-        <h1 className="text-lg font-bold text-center text-slate-800">Partnership Statistics</h1>
-        <p className="text-center text-xs text-slate-500 mt-0.5">{year === 'all' ? 'All Years' : year}</p>
+        <h1 className="text-lg font-bold text-center text-indigo-900">Partnership Statistics</h1>
+        <p className="text-center text-xs text-indigo-500 mt-0.5">{year === 'all' ? 'All Years' : year}</p>
       </div>
 
       <div className="px-4">
-        <div className="bg-white rounded-xl border border-slate-200 p-4 mb-3">
+        <div className="bg-white rounded-xl border border-indigo-200 p-4 mb-3">
           <div className="space-y-3">
             <div>
-              <label className="block text-xs font-semibold mb-1.5 text-slate-600 uppercase tracking-wide">
+              <label className="block text-xs font-semibold mb-1.5 text-indigo-600 uppercase tracking-wide">
                 First Player
               </label>
               <select
@@ -105,7 +101,7 @@ function PartnershipStatisticsContent() {
                   if (e.target.value === player2) setPlayer2('');
                   setStats(null);
                 }}
-                className="w-full px-3 py-2.5 border border-slate-300 rounded-lg focus:border-slate-500 focus:outline-none bg-white text-sm text-slate-700"
+                className="w-full px-3 py-2.5 border border-indigo-300 rounded-lg focus:border-indigo-500 focus:outline-none bg-white text-sm text-indigo-900"
               >
                 <option value="">Choose a player…</option>
                 {allPlayers.map((name) => (
@@ -115,13 +111,13 @@ function PartnershipStatisticsContent() {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold mb-1.5 text-slate-600 uppercase tracking-wide">
+              <label className="block text-xs font-semibold mb-1.5 text-indigo-600 uppercase tracking-wide">
                 Second Player
               </label>
               <select
                 value={player2}
                 onChange={(e) => { setPlayer2(e.target.value); setStats(null); }}
-                className="w-full px-3 py-2.5 border border-slate-300 rounded-lg focus:border-slate-500 focus:outline-none bg-white text-sm text-slate-700 disabled:opacity-40"
+                className="w-full px-3 py-2.5 border border-indigo-300 rounded-lg focus:border-indigo-500 focus:outline-none bg-white text-sm text-indigo-900 disabled:opacity-40"
                 disabled={!player1}
               >
                 <option value="">Choose a partner…</option>
@@ -142,29 +138,29 @@ function PartnershipStatisticsContent() {
         </div>
 
         {stats && (
-          <div className="bg-white rounded-xl border border-slate-200 p-4 mb-3">
-            <h2 className="text-base font-bold text-center text-slate-800 mb-3">
+          <div className="bg-white rounded-xl border border-indigo-200 p-4 mb-3">
+            <h2 className="text-base font-bold text-center text-indigo-900 mb-3">
               {stats.player1} & {stats.player2}
             </h2>
 
-            <div className="grid grid-cols-3 gap-3 mb-4 p-3 bg-slate-50 rounded-lg">
+            <div className="grid grid-cols-3 gap-3 mb-4 p-3 bg-indigo-50 rounded-lg">
               <div className="text-center">
                 <p className="text-2xl font-bold text-green-600">{stats.wins}</p>
-                <p className="text-xs text-slate-500 mt-0.5">Wins</p>
+                <p className="text-xs text-indigo-500 mt-0.5">Wins</p>
               </div>
               <div className="text-center">
                 <p className="text-2xl font-bold text-red-500">{stats.losses}</p>
-                <p className="text-xs text-slate-500 mt-0.5">Losses</p>
+                <p className="text-xs text-indigo-500 mt-0.5">Losses</p>
               </div>
               <div className="text-center">
-                <p className="text-2xl font-bold text-slate-800">{stats.winRate}%</p>
-                <p className="text-xs text-slate-500 mt-0.5">Win Rate</p>
+                <p className="text-2xl font-bold text-indigo-700">{stats.winRate}%</p>
+                <p className="text-xs text-indigo-500 mt-0.5">Win Rate</p>
               </div>
             </div>
 
             {stats.matches.length > 0 ? (
               <div>
-                <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Match History</h3>
+                <h3 className="text-xs font-semibold text-indigo-400 uppercase tracking-wide mb-2">Match History</h3>
                 <div className="space-y-1.5">
                   {stats.matches.map((match, idx) => (
                     <div
@@ -177,17 +173,17 @@ function PartnershipStatisticsContent() {
                         <span className={`font-bold ${match.won ? 'text-green-700' : 'text-red-600'}`}>
                           {match.won ? 'WIN' : 'LOSS'}
                         </span>
-                        <span className="text-slate-400">{match.date}</span>
+                        <span className="text-indigo-400">{match.date}</span>
                       </div>
-                      <p className="text-slate-600"><span className="font-semibold">{match.matchType}</span></p>
-                      <p className="text-slate-600 mt-0.5">vs {match.opponents}</p>
-                      <p className="text-slate-400 mt-0.5">Set {match.setNumber || 1}: {match.score}</p>
+                      <p className="text-indigo-700"><span className="font-semibold">{match.matchType}</span></p>
+                      <p className="text-indigo-700 mt-0.5">vs {match.opponents}</p>
+                      <p className="text-indigo-400 mt-0.5">Set {match.setNumber || 1}: {match.score}</p>
                     </div>
                   ))}
                 </div>
               </div>
             ) : (
-              <p className="text-center text-slate-500 text-sm">No matches found for this partnership.</p>
+              <p className="text-center text-indigo-500 text-sm">No matches found for this partnership.</p>
             )}
           </div>
         )}
@@ -202,7 +198,7 @@ function PartnershipStatisticsContent() {
 
 export default function PartnershipStatistics() {
   return (
-    <Suspense fallback={<div className="mobile-container"><div className="tournament-card mt-6"><p className="text-center text-slate-500 text-sm">Loading...</p></div></div>}>
+    <Suspense fallback={<div className="mobile-container"><div className="tournament-card mt-6"><p className="text-center text-indigo-500 text-sm">Loading…</p></div></div>}>
       <PartnershipStatisticsContent />
     </Suspense>
   );

@@ -247,50 +247,50 @@ export default function CreateTournament() {
   return (
     <div className="mobile-container safe-area-inset-bottom pb-8">
       <div className="page-section-header">
-        <h1 className="text-lg font-bold text-center text-slate-800">Create Tournament</h1>
+        <h1 className="text-lg font-bold text-center text-indigo-900">Create Tournament</h1>
       </div>
 
       <div className="tournament-card">
         <div className="flex items-center justify-between mb-5">
-          <label className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Date</label>
+          <label className="text-xs font-semibold text-indigo-600 uppercase tracking-wide">Date</label>
           <input
             type="date"
             value={tournamentDate}
             onChange={(e) => setTournamentDate(e.target.value)}
-            className="px-3 py-2 border border-slate-300 rounded-lg focus:border-slate-500 focus:outline-none text-sm text-slate-700 bg-white"
+            className="px-3 py-2 border border-indigo-300 rounded-lg focus:border-indigo-500 focus:outline-none text-sm text-indigo-800 bg-white"
           />
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-xs font-semibold mb-1.5 text-slate-600 uppercase tracking-wide">
+            <label className="block text-xs font-semibold mb-1.5 text-indigo-600 uppercase tracking-wide">
               Access Code
             </label>
             <input
               type="text"
               value={accessCode}
               onChange={(e) => setAccessCode(e.target.value)}
-              className="w-full px-3 py-2.5 border border-slate-300 rounded-lg focus:border-slate-500 focus:outline-none text-sm text-slate-700"
+              className="w-full px-3 py-2.5 border border-indigo-300 rounded-lg focus:border-indigo-500 focus:outline-none text-sm text-indigo-900"
               placeholder="Enter access code"
             />
           </div>
 
           <div className="team-container team-1-bg">
-            <h3 className="text-xs font-semibold mb-3 text-slate-700 uppercase tracking-wide">Team A</h3>
+            <h3 className="text-xs font-semibold mb-3 text-indigo-800 uppercase tracking-wide">Team A</h3>
             <div className="space-y-2">
-              <p className="text-xs font-semibold text-slate-500 mb-1">Women</p>
+              <p className="text-xs font-semibold text-indigo-500 mb-1">Women</p>
               {[0, 1, 2].map((i) => renderPlayerInput(1, i, `W${i + 1} name`, WOMEN_PLAYERS))}
-              <p className="text-xs font-semibold text-slate-500 mb-1 mt-3">Men</p>
+              <p className="text-xs font-semibold text-indigo-500 mb-1 mt-3">Men</p>
               {[3, 4, 5].map((i) => renderPlayerInput(1, i, `M${i - 2} name`, MEN_PLAYERS))}
             </div>
           </div>
 
           <div className="team-container team-2-bg">
-            <h3 className="text-xs font-semibold mb-3 text-slate-700 uppercase tracking-wide">Team B</h3>
+            <h3 className="text-xs font-semibold mb-3 text-indigo-800 uppercase tracking-wide">Team B</h3>
             <div className="space-y-2">
-              <p className="text-xs font-semibold text-slate-500 mb-1">Women</p>
+              <p className="text-xs font-semibold text-indigo-500 mb-1">Women</p>
               {[0, 1, 2].map((i) => renderPlayerInput(2, i, `W${i + 1} name`, WOMEN_PLAYERS))}
-              <p className="text-xs font-semibold text-slate-500 mb-1 mt-3">Men</p>
+              <p className="text-xs font-semibold text-indigo-500 mb-1 mt-3">Men</p>
               {[3, 4, 5].map((i) => renderPlayerInput(2, i, `M${i - 2} name`, MEN_PLAYERS))}
             </div>
           </div>

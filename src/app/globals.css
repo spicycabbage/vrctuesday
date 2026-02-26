@@ -42,13 +42,13 @@
   margin: 4% 4%;
   padding: 5%;
   box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.08), 0 1px 2px -1px rgb(0 0 0 / 0.06);
-  border: 1px solid rgb(226 232 240);
+  border: 1px solid rgb(199 210 254);
 }
 
 /* Consistent page section header */
 .page-section-header {
   background: white;
-  border-bottom: 1px solid rgb(226 232 240);
+  border-bottom: 1px solid rgb(199 210 254);
   padding: 0.875rem 1rem;
   margin-bottom: 1rem;
 }
@@ -57,8 +57,8 @@
 .btn-back {
   width: 100%;
   background: white;
-  border: 1px solid rgb(203 213 225);
-  color: rgb(71 85 105);
+  border: 1px solid rgb(165 180 252);
+  color: rgb(79 70 229);
   padding: 0.75rem;
   border-radius: 0.5rem;
   font-weight: 600;
@@ -67,13 +67,13 @@
   cursor: pointer;
 }
 .btn-back:hover {
-  background: rgb(248 250 252);
+  background: rgb(238 242 255);
 }
 
 /* Consistent primary action button */
 .btn-primary {
   width: 100%;
-  background: rgb(30 41 59);
+  background: rgb(79 70 229);
   color: white;
   padding: 0.875rem;
   border-radius: 0.5rem;
@@ -85,10 +85,10 @@
   display: block;
 }
 .btn-primary:hover {
-  background: rgb(15 23 42);
+  background: rgb(67 56 202);
 }
 .btn-primary:disabled {
-  background: rgb(148 163 184);
+  background: rgb(165 180 252);
   cursor: not-allowed;
 }
 
@@ -158,13 +158,13 @@ input[type="number"]::-webkit-inner-spin-button {
 }
 
 .match-tab-active {
-  background: #1e293b;
+  background: #4f46e5;
   color: white;
 }
 
 .match-tab-inactive {
-  background: #e5e7eb;
-  color: #6b7280;
+  background: #e0e7ff;
+  color: #4338ca;
 }
 
 .match-tab-completed {

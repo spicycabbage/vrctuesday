@@ -81,14 +81,11 @@ export default function TournamentPage({ params }: { params: Promise<{ id: strin
 
   if (error || !tournament) {
     return (
-      <div className="mobile-container safe-area-inset-top">
+      <div className="mobile-container">
         <div className="tournament-card mt-12">
           <h2 className="text-2xl font-bold text-red-600 mb-4">Error</h2>
-          <p className="text-gray-700 mb-6">{error || 'Tournament not found'}</p>
-          <button
-            onClick={() => router.push('/')}
-            className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold"
-          >
+          <p className="text-indigo-700 mb-6">{error || 'Tournament not found'}</p>
+          <button onClick={() => router.push('/')} className="btn-primary">
             Go Home
           </button>
         </div>
@@ -106,25 +103,23 @@ export default function TournamentPage({ params }: { params: Promise<{ id: strin
   const isTournamentComplete = isXDComplete && isMDComplete && isWDComplete;
 
   return (
-    <div className="mobile-container safe-area-inset-top safe-area-inset-bottom pb-8">
+    <div className="mobile-container safe-area-inset-bottom pb-8">
       {/* Header */}
-      <div className="bg-white shadow-md p-4 mb-4">
-        <h1 className="text-2xl font-bold text-center text-gray-800">VRC Tuesday</h1>
-        <p className="text-center text-sm text-gray-600 mt-1">{tournament.date}</p>
-        <p className="text-center text-xs text-gray-500 mt-1">Code: {tournament.accessCode}</p>
-        
+      <div className="page-section-header">
+        <p className="text-center text-xs text-indigo-500">{tournament.date} · Code: {tournament.accessCode}</p>
+
         {/* Score Summary */}
-        <div className="mt-4 flex justify-around items-center">
+        <div className="mt-3 flex justify-around items-center">
           <div className="text-center">
-            <p className="text-xs text-gray-600">{tournament.team1Name}</p>
-            <p className="text-2xl font-bold text-blue-600">{tournament.team1SetsWon}</p>
-            <p className="text-xs text-gray-500">{tournament.team1TotalPoints} pts</p>
+            <p className="text-xs font-semibold text-indigo-700">{tournament.team1Name}</p>
+            <p className="text-3xl font-bold text-indigo-600">{tournament.team1SetsWon}</p>
+            <p className="text-xs text-indigo-400">{tournament.team1TotalPoints} pts</p>
           </div>
-          <div className="text-gray-400 text-2xl">vs</div>
+          <div className="text-indigo-300 text-xl font-light">vs</div>
           <div className="text-center">
-            <p className="text-xs text-gray-600">{tournament.team2Name}</p>
-            <p className="text-2xl font-bold text-red-600">{tournament.team2SetsWon}</p>
-            <p className="text-xs text-gray-500">{tournament.team2TotalPoints} pts</p>
+            <p className="text-xs font-semibold text-red-600">{tournament.team2Name}</p>
+            <p className="text-3xl font-bold text-red-500">{tournament.team2SetsWon}</p>
+            <p className="text-xs text-indigo-400">{tournament.team2TotalPoints} pts</p>
           </div>
         </div>
 
@@ -227,10 +222,10 @@ export default function TournamentPage({ params }: { params: Promise<{ id: strin
               
               <button
                 onClick={() => router.push('/')}
-                className="w-full bg-gray-600 text-white py-3 rounded-lg font-semibold hover:bg-gray-700 transition"
-              >
-                Back to Home
-              </button>
+              className="btn-back"
+            >
+              ← Back to Home
+            </button>
             </div>
           </>
         )}
