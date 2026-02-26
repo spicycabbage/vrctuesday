@@ -47,7 +47,11 @@ function TournamentResultsContent() {
   return (
     <div className="mobile-container safe-area-inset-bottom pb-8">
       <div className="page-section-header">
-        <h1 className="text-lg font-bold text-center text-indigo-900">Tournament History</h1>
+        <div className="flex items-center justify-between">
+          <button onClick={() => router.push('/')} className="text-indigo-500 hover:text-indigo-700 text-sm font-medium">← Back</button>
+          <h1 className="text-lg font-bold text-indigo-900">Tournament History</h1>
+          <div className="w-16" />
+        </div>
         <p className="text-center text-xs text-indigo-500 mt-0.5">
           {tournaments.length} tournament{tournaments.length !== 1 ? 's' : ''} {year === 'all' ? 'total' : `in ${year}`}
         </p>
