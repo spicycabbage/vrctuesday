@@ -125,7 +125,7 @@ function AdvancedAnalyticsContent() {
     <div className="mobile-container safe-area-inset-bottom pb-8">
       <div className="page-section-header">
         <div className="flex items-center justify-between">
-          <button onClick={() => router.push('/')} className="text-indigo-500 hover:text-indigo-700 text-sm font-medium">← Back</button>
+          <button onClick={() => router.push('/')} className="text-indigo-500 hover:text-indigo-700 text-2xl leading-none px-1">‹</button>
           <h1 className="text-lg font-bold text-indigo-900">Advanced Analytics</h1>
           <div className="w-16" />
         </div>
@@ -242,7 +242,7 @@ function AdvancedAnalyticsContent() {
         )}
 
         <button onClick={() => router.push('/')} className="btn-back mt-6">
-          ← Back to Home
+          ‹ to Home
         </button>
       </div>
     </div>
