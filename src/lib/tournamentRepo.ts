@@ -1,5 +1,20 @@
 import { sql, ensureSchema, DbTeamTournamentRow, DbTeamPlayerRow, DbTeamMatchRow } from './db';
-import { Tournament, TeamPlayer, Match, MatchType, SetScore } from './gameLogic';
+import {
+  Tournament,
+  TeamPlayer,
+  Match,
+  MatchType,
+  TournamentFormat,
+  inferFormat,
+} from './gameLogic';
+
+function resolveFormat(
+  rowFormat: string | null | undefined,
+  team1Players: TeamPlayer[]
+): TournamentFormat {
+  if (rowFormat === '6v6' || rowFormat === '8v8') return rowFormat;
+  return inferFormat(team1Players.length);
+}
 
 /**
  * Repository for team tournament database operations
@@ -49,14 +64,14 @@ export async function saveTournament(tournament: Tournament): Promise<void> {
     insert into team_tournaments (
       id, access_code, date, team1_name, team2_name,
       team1_sets_won, team2_sets_won, team1_total_points, team2_total_points,
-      tournament_winner, is_finalized, created_at
+      tournament_winner, is_finalized, created_at, format
     ) values (
       ${tournament.id}, ${tournament.accessCode}, ${tournament.date},
       ${tournament.team1Name}, ${tournament.team2Name},
       ${tournament.team1SetsWon}, ${tournament.team2SetsWon},
       ${tournament.team1TotalPoints}, ${tournament.team2TotalPoints},
       ${tournament.tournamentWinner}, ${tournament.isFinalized},
-      ${tournament.createdAt.toISOString()}
+      ${tournament.createdAt.toISOString()}, ${tournament.format}
     )
     on conflict (id) do update set
       team1_name = excluded.team1_name,
@@ -66,7 +81,8 @@ export async function saveTournament(tournament: Tournament): Promise<void> {
       team1_total_points = excluded.team1_total_points,
       team2_total_points = excluded.team2_total_points,
       tournament_winner = excluded.tournament_winner,
-      is_finalized = excluded.is_finalized
+      is_finalized = excluded.is_finalized,
+      format = excluded.format
   `;
 
   // Then, insert players and matches in parallel (now safe because tournament exists)
@@ -190,6 +206,7 @@ export async function getTournamentById(id: string): Promise<Tournament | null> 
     id: tournamentRow.id,
     accessCode: tournamentRow.access_code,
     date: tournamentRow.date,
+    format: resolveFormat((tournamentRow as any).format, team1Players),
     team1Name: tournamentRow.team1_name,
     team2Name: tournamentRow.team2_name,
     team1Players,
@@ -316,6 +333,7 @@ export async function getTournamentHistory(): Promise<Tournament[]> {
       id: tournamentRow.id,
       accessCode: tournamentRow.access_code,
       date: tournamentRow.date,
+      format: resolveFormat(tournamentRow.format, team1Players),
       team1Name: tournamentRow.team1_name,
       team2Name: tournamentRow.team2_name,
       team1Players,

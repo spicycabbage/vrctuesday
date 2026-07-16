@@ -25,8 +25,16 @@ export function ensureSchema(): Promise<void> {
       team2_total_points int not null default 0,
       tournament_winner int,
       is_finalized boolean not null default false,
-      created_at timestamptz not null default now()
+      created_at timestamptz not null default now(),
+      format text not null default '6v6'
     )`;
+
+    // Backfill format for DBs created before this column existed
+    try {
+      await sql`alter table team_tournaments add column if not exists format text not null default '6v6'`;
+    } catch {
+      // ignore if alter unsupported / already present
+    }
 
     await sql`create table if not exists team_players (
       tournament_id text not null,
@@ -87,6 +95,7 @@ export type DbTeamTournamentRow = {
   tournament_winner: number | null;
   is_finalized: boolean;
   created_at: string;
+  format: string;
 };
 
 export type DbTeamPlayerRow = {

@@ -2,12 +2,27 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import {
+  TournamentFormat,
+  playersPerTeam,
+  womenCount,
+} from '@/lib/gameLogic';
 
-const WOMEN_PLAYERS = ['Ivy', 'Vlo', 'Karen', 'Joanne', 'Valerie', 'Anna', 'Elisha', 'Crystal', 'Misaki', 'Jenna'];
-const MEN_PLAYERS = ['Mike', 'Clinton', 'Alex', 'Trevor', 'Justin', 'Yves', 'Anish', 'Richard'];
+const WOMEN_PLAYERS = ['Ivy', 'Vlo', 'Karen', 'Joanne', 'Valerie', 'Anna', 'Elisha', 'Crystal', 'Misaki', 'Jenna', 'Steph', 'Roz', 'Lily'];
+const MEN_PLAYERS = ['Mike', 'Clinton', 'Alex', 'Trevor', 'Justin', 'Yves', 'Anish', 'Richard', 'Kevin', 'Rich'];
+
+function emptyRoster(format: TournamentFormat): string[] {
+  return Array(playersPerTeam(format)).fill('');
+}
+
+function slotLabel(index: number, format: TournamentFormat): string {
+  const w = womenCount(format);
+  return index < w ? `W${index + 1}` : `M${index - w + 1}`;
+}
 
 export default function CreateTournament() {
   const router = useRouter();
+  const [format, setFormat] = useState<TournamentFormat>('6v6');
   const [accessCode, setAccessCode] = useState('111');
   const [team1Name, setTeam1Name] = useState('Team A');
   const [team2Name, setTeam2Name] = useState('Team B');
@@ -15,16 +30,9 @@ export default function CreateTournament() {
     const today = new Date();
     return today.toISOString().split('T')[0];
   });
-  
-  // Team 1 players: W1, W2, W3, M1, M2, M3
-  const [team1Players, setTeam1Players] = useState<string[]>([
-    '', '', '', '', '', ''
-  ]);
-  
-  // Team 2 players: W1, W2, W3, M1, M2, M3
-  const [team2Players, setTeam2Players] = useState<string[]>([
-    '', '', '', '', '', ''
-  ]);
+
+  const [team1Players, setTeam1Players] = useState<string[]>(() => emptyRoster('6v6'));
+  const [team2Players, setTeam2Players] = useState<string[]>(() => emptyRoster('6v6'));
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -33,17 +41,29 @@ export default function CreateTournament() {
   const suggestionsRef = useRef<HTMLDivElement>(null);
   const inputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
 
-  // Check if all fields are filled
-  const allFieldsFilled = team1Players.every(p => p && p.trim()) && 
-                          team2Players.every(p => p && p.trim()) && 
-                          accessCode.trim();
+  const wCount = womenCount(format);
+  const womenIdx = Array.from({ length: wCount }, (_, i) => i);
+  const menIdx = Array.from({ length: wCount }, (_, i) => i + wCount);
+
+  const allFieldsFilled =
+    team1Players.every((p) => p && p.trim()) &&
+    team2Players.every((p) => p && p.trim()) &&
+    accessCode.trim();
+
+  const switchFormat = (next: TournamentFormat) => {
+    if (next === format) return;
+    setFormat(next);
+    setTeam1Players(emptyRoster(next));
+    setTeam2Players(emptyRoster(next));
+    setDuplicateWarning('');
+    setError('');
+  };
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (suggestionsRef.current && !suggestionsRef.current.contains(e.target as Node)) {
-        // Check if click is on any input
         const clickedInput = Object.values(inputRefs.current).some(
-          ref => ref && ref.contains(e.target as Node)
+          (ref) => ref && ref.contains(e.target as Node)
         );
         if (!clickedInput) {
           setShowSuggestions(null);
@@ -58,7 +78,6 @@ export default function CreateTournament() {
     e.preventDefault();
     setError('');
 
-    // Validation
     if (!accessCode.trim()) {
       setError('Access code is required');
       return;
@@ -69,40 +88,33 @@ export default function CreateTournament() {
       return;
     }
 
-    // Validate all player names are filled and not just whitespace
-    for (let i = 0; i < 6; i++) {
+    const expected = playersPerTeam(format);
+    for (let i = 0; i < expected; i++) {
       if (!team1Players[i] || !team1Players[i].trim()) {
-        const label = i < 3 ? `W${i + 1}` : `M${i - 2}`;
-        setError(`Please enter Team A ${label} name`);
+        setError(`Please enter Team A ${slotLabel(i, format)} name`);
         return;
       }
       if (!team2Players[i] || !team2Players[i].trim()) {
-        const label = i < 3 ? `W${i + 1}` : `M${i - 2}`;
-        setError(`Please enter Team B ${label} name`);
+        setError(`Please enter Team B ${slotLabel(i, format)} name`);
         return;
       }
     }
 
-    // Check for duplicate names within each team
-    const team1Names = team1Players.map(p => p.trim().toLowerCase());
-    const team2Names = team2Players.map(p => p.trim().toLowerCase());
-    
-    const team1Duplicates = team1Names.filter((name, index) => team1Names.indexOf(name) !== index);
-    if (team1Duplicates.length > 0) {
-      setError(`Team A has duplicate player names`);
-      return;
-    }
-    
-    const team2Duplicates = team2Names.filter((name, index) => team2Names.indexOf(name) !== index);
-    if (team2Duplicates.length > 0) {
-      setError(`Team B has duplicate player names`);
+    const team1Names = team1Players.map((p) => p.trim().toLowerCase());
+    const team2Names = team2Players.map((p) => p.trim().toLowerCase());
+
+    if (team1Names.filter((name, index) => team1Names.indexOf(name) !== index).length > 0) {
+      setError('Team A has duplicate player names');
       return;
     }
 
-    // Check for same player on both teams
-    const duplicateAcrossTeams = team1Names.find(name => team2Names.includes(name));
-    if (duplicateAcrossTeams) {
-      setError(`Player cannot be on both teams`);
+    if (team2Names.filter((name, index) => team2Names.indexOf(name) !== index).length > 0) {
+      setError('Team B has duplicate player names');
+      return;
+    }
+
+    if (team1Names.find((name) => team2Names.includes(name))) {
+      setError('Player cannot be on both teams');
       return;
     }
 
@@ -118,8 +130,9 @@ export default function CreateTournament() {
           team2Name,
           team1Players,
           team2Players,
-          date: tournamentDate
-        })
+          date: tournamentDate,
+          format,
+        }),
       });
 
       if (!response.ok) {
@@ -136,11 +149,11 @@ export default function CreateTournament() {
   };
 
   const checkDuplicates = (team1: string[], team2: string[]) => {
-    const allNames = [...team1, ...team2].map(n => n.trim().toLowerCase()).filter(n => n);
+    const allNames = [...team1, ...team2].map((n) => n.trim().toLowerCase()).filter((n) => n);
     const duplicates = allNames.filter((name, index) => allNames.indexOf(name) !== index);
-    
+
     if (duplicates.length > 0) {
-      setDuplicateWarning(`⚠️ Duplicate player name detected`);
+      setDuplicateWarning('⚠️ Duplicate player name detected');
     } else {
       setDuplicateWarning('');
     }
@@ -148,7 +161,6 @@ export default function CreateTournament() {
 
   const updateTeam1Player = (index: number, value: string) => {
     const newPlayers = [...team1Players];
-    // Keep the value as-is while typing, only trim on blur
     newPlayers[index] = value;
     setTeam1Players(newPlayers);
     checkDuplicates(newPlayers, team2Players);
@@ -156,7 +168,6 @@ export default function CreateTournament() {
 
   const updateTeam2Player = (index: number, value: string) => {
     const newPlayers = [...team2Players];
-    // Keep the value as-is while typing, only trim on blur
     newPlayers[index] = value;
     setTeam2Players(newPlayers);
     checkDuplicates(team1Players, newPlayers);
@@ -175,18 +186,16 @@ export default function CreateTournament() {
   };
 
   const getSuggestions = (value: string, playerList: string[]) => {
-    // Get all selected names from both teams
     const selectedNames = [...team1Players, ...team2Players]
-      .filter(name => name && name.trim())
-      .map(name => name.toLowerCase());
-    
-    // Filter out already selected names
-    const availableNames = playerList.filter(name => 
-      !selectedNames.includes(name.toLowerCase())
+      .filter((name) => name && name.trim())
+      .map((name) => name.toLowerCase());
+
+    const availableNames = playerList.filter(
+      (name) => !selectedNames.includes(name.toLowerCase())
     );
-    
+
     if (!value.trim()) return availableNames;
-    return availableNames.filter(name => 
+    return availableNames.filter((name) =>
       name.toLowerCase().startsWith(value.toLowerCase())
     );
   };
@@ -207,20 +216,24 @@ export default function CreateTournament() {
     return (
       <div key={index} className="relative">
         <input
-          ref={el => { inputRefs.current[fieldId] = el; }}
+          ref={(el) => {
+            inputRefs.current[fieldId] = el;
+          }}
           type="text"
           value={value || ''}
           onChange={(e) => updateFn(index, e.target.value)}
           onFocus={() => setShowSuggestions(fieldId)}
           onBlur={() => handleBlur(team, index)}
           className={`w-full px-3 py-2 border rounded focus:outline-none text-sm ${
-            isEmpty ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-blue-500'
+            isEmpty
+              ? 'border-red-300 focus:border-red-500'
+              : 'border-gray-300 focus:border-blue-500'
           }`}
           placeholder={label}
           autoComplete="off"
         />
         {isOpen && suggestions.length > 0 && (
-          <div 
+          <div
             ref={suggestionsRef}
             className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-y-auto"
           >
@@ -243,7 +256,6 @@ export default function CreateTournament() {
     );
   };
 
-
   return (
     <div className="mobile-container safe-area-inset-bottom pb-8">
       <div className="page-section-header">
@@ -251,6 +263,39 @@ export default function CreateTournament() {
       </div>
 
       <div className="tournament-card">
+        <div className="mb-5">
+          <p className="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-2">
+            Format
+          </p>
+          <div className="grid grid-cols-2 gap-2" role="radiogroup" aria-label="Tournament format">
+            {(
+              [
+                { value: '6v6' as const, title: '6 vs 6', desc: '3W + 3M · 9 matches' },
+                { value: '8v8' as const, title: '8 vs 8', desc: '4W + 4M · 24 matches' },
+              ] as const
+            ).map((opt) => {
+              const selected = format === opt.value;
+              return (
+                <button
+                  key={opt.value}
+                  type="button"
+                  role="radio"
+                  aria-checked={selected}
+                  onClick={() => switchFormat(opt.value)}
+                  className={`text-left rounded-xl border px-3 py-3 transition ${
+                    selected
+                      ? 'border-blue-600 bg-blue-50 ring-2 ring-blue-600/30'
+                      : 'border-slate-300 bg-white hover:border-slate-400'
+                  }`}
+                >
+                  <p className="font-semibold text-sm text-slate-900">{opt.title}</p>
+                  <p className="text-xs text-slate-500 mt-0.5">{opt.desc}</p>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
         <div className="flex items-center justify-between mb-5">
           <label className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Date</label>
           <input
@@ -279,9 +324,9 @@ export default function CreateTournament() {
             <h3 className="text-xs font-semibold mb-3 text-gray-800 uppercase tracking-wide">Team A</h3>
             <div className="space-y-2">
               <p className="text-xs font-semibold text-gray-500 mb-1">Women</p>
-              {[0, 1, 2].map((i) => renderPlayerInput(1, i, `W${i + 1} name`, WOMEN_PLAYERS))}
+              {womenIdx.map((i) => renderPlayerInput(1, i, `${slotLabel(i, format)} name`, WOMEN_PLAYERS))}
               <p className="text-xs font-semibold text-gray-500 mb-1 mt-3">Men</p>
-              {[3, 4, 5].map((i) => renderPlayerInput(1, i, `M${i - 2} name`, MEN_PLAYERS))}
+              {menIdx.map((i) => renderPlayerInput(1, i, `${slotLabel(i, format)} name`, MEN_PLAYERS))}
             </div>
           </div>
 
@@ -289,9 +334,9 @@ export default function CreateTournament() {
             <h3 className="text-xs font-semibold mb-3 text-gray-800 uppercase tracking-wide">Team B</h3>
             <div className="space-y-2">
               <p className="text-xs font-semibold text-gray-500 mb-1">Women</p>
-              {[0, 1, 2].map((i) => renderPlayerInput(2, i, `W${i + 1} name`, WOMEN_PLAYERS))}
+              {womenIdx.map((i) => renderPlayerInput(2, i, `${slotLabel(i, format)} name`, WOMEN_PLAYERS))}
               <p className="text-xs font-semibold text-gray-500 mb-1 mt-3">Men</p>
-              {[3, 4, 5].map((i) => renderPlayerInput(2, i, `M${i - 2} name`, MEN_PLAYERS))}
+              {menIdx.map((i) => renderPlayerInput(2, i, `${slotLabel(i, format)} name`, MEN_PLAYERS))}
             </div>
           </div>
 
@@ -315,11 +360,7 @@ export default function CreateTournament() {
             {loading ? 'Creating…' : 'Create Tournament'}
           </button>
 
-          <button
-            type="button"
-            onClick={() => router.push('/')}
-            className="btn-back"
-          >
+          <button type="button" onClick={() => router.push('/')} className="btn-back">
             Cancel
           </button>
         </form>

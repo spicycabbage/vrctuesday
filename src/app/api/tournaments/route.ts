@@ -1,13 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createTournament } from '@/lib/gameLogic';
+import {
+  createTournament,
+  playersPerTeam,
+  TournamentFormat,
+} from '@/lib/gameLogic';
 import { saveTournament, getActiveTournament } from '@/lib/tournamentRepo';
+
+function parseFormat(raw: unknown): TournamentFormat {
+  return raw === '8v8' ? '8v8' : '6v6';
+}
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { accessCode, team1Name, team2Name, team1Players, team2Players, date } = body;
+    const format = parseFormat(body.format);
+    const expected = playersPerTeam(format);
 
-    // Check if there's already an active tournament
     const activeTournament = await getActiveTournament();
     if (activeTournament) {
       return NextResponse.json(
@@ -16,7 +25,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validation
     if (!accessCode || !team1Name || !team2Name) {
       return NextResponse.json(
         { error: 'Missing required fields' },
@@ -24,22 +32,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!Array.isArray(team1Players) || team1Players.length !== 6) {
+    if (!Array.isArray(team1Players) || team1Players.length !== expected) {
       return NextResponse.json(
-        { error: 'Team 1 must have exactly 6 players' },
+        { error: `Team 1 must have exactly ${expected} players for ${format}` },
         { status: 400 }
       );
     }
 
-    if (!Array.isArray(team2Players) || team2Players.length !== 6) {
+    if (!Array.isArray(team2Players) || team2Players.length !== expected) {
       return NextResponse.json(
-        { error: 'Team 2 must have exactly 6 players' },
+        { error: `Team 2 must have exactly ${expected} players for ${format}` },
         { status: 400 }
       );
     }
 
-    // Validate all player names are filled and not empty/whitespace
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < expected; i++) {
       if (!team1Players[i] || typeof team1Players[i] !== 'string' || !team1Players[i].trim()) {
         return NextResponse.json(
           { error: `Team 1 player ${i + 1} name is required` },
@@ -54,17 +61,16 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Check for duplicate names within each team
     const team1Names = team1Players.map((p: string) => p.trim().toLowerCase());
     const team2Names = team2Players.map((p: string) => p.trim().toLowerCase());
-    
+
     if (new Set(team1Names).size !== team1Names.length) {
       return NextResponse.json(
         { error: 'Team 1 has duplicate player names' },
         { status: 400 }
       );
     }
-    
+
     if (new Set(team2Names).size !== team2Names.length) {
       return NextResponse.json(
         { error: 'Team 2 has duplicate player names' },
@@ -72,8 +78,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check for same player on both teams
-    const duplicateAcrossTeams = team1Names.find(name => team2Names.includes(name));
+    const duplicateAcrossTeams = team1Names.find((name: string) => team2Names.includes(name));
     if (duplicateAcrossTeams) {
       return NextResponse.json(
         { error: 'A player cannot be on both teams' },
@@ -81,26 +86,25 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create tournament
     const tournament = createTournament(
       accessCode,
       team1Name,
       team2Name,
       team1Players,
-      team2Players
+      team2Players,
+      date,
+      format
     );
 
-    // Set the date if provided
     if (date) {
       tournament.createdAt = new Date(date);
     }
 
-    // Save to database
     await saveTournament(tournament);
 
     return NextResponse.json({
       success: true,
-      tournamentId: tournament.id
+      tournamentId: tournament.id,
     });
   } catch (error: any) {
     console.error('Error creating tournament:', error);
@@ -114,7 +118,7 @@ export async function POST(request: NextRequest) {
 export async function GET() {
   try {
     const tournament = await getActiveTournament();
-    
+
     if (!tournament) {
       return NextResponse.json(
         { error: 'No active tournament found' },

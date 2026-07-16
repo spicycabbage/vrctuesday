@@ -106,7 +106,10 @@ export default function TournamentPage({ params }: { params: Promise<{ id: strin
     <div className="mobile-container safe-area-inset-bottom pb-8">
       {/* Header */}
       <div className="page-section-header">
-        <p className="text-center text-xs text-gray-500">{tournament.date} · Code: {tournament.accessCode}</p>
+        <p className="text-center text-xs text-gray-500">
+          {tournament.date} · Code: {tournament.accessCode}
+          {tournament.format ? ` · ${tournament.format}` : ''}
+        </p>
 
         {/* Score Summary */}
         <div className="mt-3 flex justify-around items-center">

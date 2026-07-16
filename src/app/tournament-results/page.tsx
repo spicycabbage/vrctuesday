@@ -83,7 +83,14 @@ function TournamentResultsContent() {
                     className="w-full px-4 py-3.5 bg-blue-800 hover:bg-blue-700 text-white transition-colors text-left"
                   >
                     <div className="flex justify-between items-center">
-                      <p className="font-semibold text-sm">{formattedDate}</p>
+                      <div className="flex items-center gap-2 min-w-0">
+                        <p className="font-semibold text-sm">{formattedDate}</p>
+                        {tournament.format && (
+                          <span className="shrink-0 text-[10px] font-bold uppercase tracking-wide text-blue-100 bg-blue-950/40 border border-blue-400/40 rounded px-1.5 py-0.5">
+                            {tournament.format}
+                          </span>
+                        )}
+                      </div>
                       <div className="flex items-center gap-2">
                         <span className="text-base">🏆</span>
                         <span className="font-bold text-amber-300 text-sm">{winnerName}</span>
