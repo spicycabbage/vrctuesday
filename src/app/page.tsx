@@ -23,8 +23,8 @@ export default function Home() {
   const navItems = [
     {
       href: `/tournament-results?year=${selectedYear}`,
-      title: 'Tournament Results',
-      desc: 'Match history & scores',
+      title: 'Tournament History',
+      desc: 'Match history & scores by format',
       accent: 'bg-blue-500',
       hover: 'hover:bg-blue-100/80 hover:border-blue-400',
     },
@@ -34,13 +34,6 @@ export default function Home() {
       desc: 'Player win/loss & head-to-head (all formats)',
       accent: 'bg-violet-500',
       hover: 'hover:bg-violet-100/80 hover:border-violet-400',
-    },
-    {
-      href: `/team-statistics?year=${selectedYear}`,
-      title: 'Team Statistics',
-      desc: 'Team W/L by 6v6 or 8v8',
-      accent: 'bg-amber-500',
-      hover: 'hover:bg-amber-100/80 hover:border-amber-400',
     },
     {
       href: `/partnership-statistics?year=${selectedYear}`,
