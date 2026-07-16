@@ -9,11 +9,62 @@
     -webkit-tap-highlight-color: transparent;
     overflow-y: scroll; /* Always show scrollbar to prevent layout shift */
   }
-  
+
   body {
     overscroll-behavior: none;
     -webkit-overflow-scrolling: touch;
+    color: rgb(15 23 42); /* slate-900: stronger default contrast */
   }
+
+  /* Single, consistent focus ring across interactive controls */
+  :where(a, button, [role="button"], select, input, textarea, summary):focus-visible {
+    outline: 2px solid rgb(37 99 235); /* blue-600 */
+    outline-offset: 2px;
+    border-radius: 0.5rem;
+  }
+}
+
+/* Honor users who prefer less motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* App background — softens the all-white feel without changing card surfaces */
+.app-bg {
+  background-image:
+    radial-gradient(1200px 600px at 0% -10%, rgba(59, 130, 246, 0.10), transparent 60%),
+    radial-gradient(900px 500px at 100% 0%, rgba(99, 102, 241, 0.08), transparent 55%),
+    linear-gradient(180deg, #f8fafc 0%, #eef2ff 45%, #f1f5f9 100%);
+  background-attachment: fixed;
+}
+
+/* Skip-to-content link (visually hidden until focused) */
+.skip-link {
+  position: absolute;
+  left: 0.5rem;
+  top: 0.5rem;
+  transform: translateY(-150%);
+  z-index: 100;
+  background: rgb(29 78 216);
+  color: white;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  box-shadow: 0 6px 16px -6px rgba(0, 0, 0, 0.4);
+  transition: transform 0.15s ease;
+}
+.skip-link:focus {
+  transform: translateY(0);
+  outline: 2px solid white;
+  outline-offset: 2px;
 }
 
 /* iPhone safe area - applied to sticky header, not page body */
@@ -38,11 +89,13 @@
 
 .tournament-card {
   background: white;
-  border-radius: 0.75rem;
+  border-radius: 1rem;
   margin: 4% 4%;
   padding: 5%;
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.08), 0 1px 2px -1px rgb(0 0 0 / 0.06);
-  border: 1px solid rgb(229 231 235);
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 8px 24px -12px rgba(15, 23, 42, 0.10);
+  border: 1px solid rgb(226 232 240); /* slate-200 */
 }
 
 /* Consistent page section header */
@@ -73,10 +126,38 @@
 /* Consistent primary action button */
 .btn-primary {
   width: 100%;
-  background: rgb(29 78 216);
+  background: linear-gradient(180deg, rgb(37 99 235) 0%, rgb(29 78 216) 100%);
   color: white;
   padding: 0.875rem;
-  border-radius: 0.5rem;
+  border-radius: 0.625rem;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  transition: filter 0.15s, transform 0.05s;
+  cursor: pointer;
+  text-align: center;
+  display: block;
+  box-shadow: 0 6px 16px -8px rgba(29, 78, 216, 0.55);
+}
+.btn-primary:hover {
+  filter: brightness(1.05);
+}
+.btn-primary:active {
+  transform: translateY(1px);
+}
+.btn-primary:disabled {
+  background: rgb(147 197 253);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+/* Secondary / ghost action button */
+.btn-secondary {
+  width: 100%;
+  background: white;
+  color: rgb(29 78 216);
+  padding: 0.875rem;
+  border-radius: 0.625rem;
+  border: 1px solid rgb(191 219 254);
   font-weight: 600;
   font-size: 0.9375rem;
   transition: background 0.15s;
@@ -84,12 +165,8 @@
   text-align: center;
   display: block;
 }
-.btn-primary:hover {
-  background: rgb(30 64 175);
-}
-.btn-primary:disabled {
-  background: rgb(147 197 253);
-  cursor: not-allowed;
+.btn-secondary:hover {
+  background: rgb(239 246 255);
 }
 
 .player-button {
