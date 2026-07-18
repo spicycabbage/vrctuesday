@@ -270,8 +270,8 @@ export default function CreateTournament() {
           <div className="grid grid-cols-2 gap-2" role="radiogroup" aria-label="Tournament format">
             {(
               [
-                { value: '6v6' as const, title: '6 vs 6', desc: '3W + 3M · 9 matches' },
-                { value: '8v8' as const, title: '8 vs 8', desc: '4W + 4M · 24 matches' },
+                { value: '6v6' as const, title: '(6x6)' },
+                { value: '8v8' as const, title: '(8x8)' },
               ] as const
             ).map((opt) => {
               const selected = format === opt.value;
@@ -282,14 +282,13 @@ export default function CreateTournament() {
                   role="radio"
                   aria-checked={selected}
                   onClick={() => switchFormat(opt.value)}
-                  className={`text-left rounded-xl border px-3 py-3 transition ${
+                  className={`text-center rounded-xl border px-3 py-3 transition ${
                     selected
                       ? 'border-blue-600 bg-blue-50 ring-2 ring-blue-600/30'
                       : 'border-slate-300 bg-white hover:border-slate-400'
                   }`}
                 >
                   <p className="font-semibold text-sm text-slate-900">{opt.title}</p>
-                  <p className="text-xs text-slate-500 mt-0.5">{opt.desc}</p>
                 </button>
               );
             })}

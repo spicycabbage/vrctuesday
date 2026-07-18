@@ -6,6 +6,7 @@ import {
   MatchType,
   TournamentFormat,
   inferFormat,
+  syncTournamentMatches,
 } from './gameLogic';
 
 function resolveFormat(
@@ -202,7 +203,7 @@ export async function getTournamentById(id: string): Promise<Tournament | null> 
     matchWinner: row.match_winner as 1 | 2 | null
   }));
 
-  return {
+  return syncTournamentMatches({
     id: tournamentRow.id,
     accessCode: tournamentRow.access_code,
     date: tournamentRow.date,
@@ -219,7 +220,7 @@ export async function getTournamentById(id: string): Promise<Tournament | null> 
     tournamentWinner: tournamentRow.tournament_winner as 1 | 2 | null,
     isFinalized: tournamentRow.is_finalized,
     createdAt: new Date(tournamentRow.created_at)
-  };
+  });
 }
 
 export async function getTournamentByCode(accessCode: string): Promise<Tournament | null> {

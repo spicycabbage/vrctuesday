@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getTournamentById, saveTournament } from '@/lib/tournamentRepo';
-import { isTournamentComplete } from '@/lib/gameLogic';
+import { isTournamentComplete, syncTournamentMatches } from '@/lib/gameLogic';
 
 export async function POST(
   request: NextRequest,
@@ -8,36 +8,41 @@ export async function POST(
 ) {
   try {
     const { id } = await params;
-    const tournament = await getTournamentById(id);
+    const loaded = await getTournamentById(id);
 
-    if (!tournament) {
+    if (!loaded) {
       return NextResponse.json(
         { error: 'Tournament not found' },
         { status: 404 }
       );
     }
 
-    if (tournament.isFinalized) {
+    if (loaded.isFinalized) {
       return NextResponse.json(
         { error: 'Tournament already finalized' },
         { status: 400 }
       );
     }
 
+    // Repair 8v8 matches that have set1 scored but completed=false (pre-fix)
+    const tournament = syncTournamentMatches({
+      ...loaded,
+      matches: loaded.matches.map((m) => ({ ...m })),
+    });
+
     if (!isTournamentComplete(tournament)) {
       return NextResponse.json(
-        { error: 'Tournament is not complete yet' },
+        { error: 'Tournament is not complete yet — every match needs a score' },
         { status: 400 }
       );
     }
 
-    // Finalize
     tournament.isFinalized = true;
     await saveTournament(tournament);
 
     return NextResponse.json({
       success: true,
-      tournament
+      tournament,
     });
   } catch (error: any) {
     console.error('Error finalizing tournament:', error);

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Tournament, Match, TeamPlayer } from '@/lib/gameLogic';
+import { Tournament, Match, setsPerMatch } from '@/lib/gameLogic';
 
 interface MatchesTabProps {
   matches: Match[];
@@ -10,6 +10,9 @@ interface MatchesTabProps {
 }
 
 export default function MatchesTab({ matches, tournament, onScoreUpdate }: MatchesTabProps) {
+  const singleSet = setsPerMatch(tournament.format) === 1;
+  const scoreLabel = singleSet ? 'Score' : 'Set 1';
+
   const [editingMatch, setEditingMatch] = useState<number | null>(null);
   const [set1Team1Score, setSet1Team1Score] = useState('');
   const [set1Team2Score, setSet1Team2Score] = useState('');
@@ -19,14 +22,13 @@ export default function MatchesTab({ matches, tournament, onScoreUpdate }: Match
 
   const getPlayerName = (teamNumber: 1 | 2, playerId: number): string => {
     const players = teamNumber === 1 ? tournament.team1Players : tournament.team2Players;
-    const player = players.find(p => p.id === playerId);
+    const player = players.find((p) => p.id === playerId);
     return player?.name || '?';
   };
 
   const handleStartEdit = (match: Match) => {
     setEditingMatch(match.id);
-    
-    // Pre-fill existing scores if any
+
     if (match.set1) {
       setSet1Team1Score(match.set1.team1Score.toString());
       setSet1Team2Score(match.set1.team2Score.toString());
@@ -34,8 +36,8 @@ export default function MatchesTab({ matches, tournament, onScoreUpdate }: Match
       setSet1Team1Score('');
       setSet1Team2Score('');
     }
-    
-    if (match.set2) {
+
+    if (!singleSet && match.set2) {
       setSet2Team1Score(match.set2.team1Score.toString());
       setSet2Team2Score(match.set2.team2Score.toString());
     } else {
@@ -45,27 +47,18 @@ export default function MatchesTab({ matches, tournament, onScoreUpdate }: Match
   };
 
   const validateBadmintonScore = (score1: number, score2: number): boolean => {
-    // Both scores must be non-negative
     if (score1 < 0 || score2 < 0) return false;
-
-    // Maximum score is 30
     if (score1 > 30 || score2 > 30) return false;
-
-    // Someone must have won (at least one score >= 21)
     if (score1 < 21 && score2 < 21) return false;
 
     const winner = score1 > score2 ? score1 : score2;
     const loser = score1 > score2 ? score2 : score1;
 
-    // If winner has 21-29 points
     if (winner < 30) {
-      // Must win by at least 2 points
       if (winner - loser < 2) return false;
-      // If winner is > 21, must be winning by exactly 2 (deuce situation)
       if (winner > 21 && winner - loser !== 2) return false;
     }
 
-    // If winner has 30 points, loser must be 28 or 29
     if (winner === 30 && loser < 28) return false;
 
     return true;
@@ -78,18 +71,16 @@ export default function MatchesTab({ matches, tournament, onScoreUpdate }: Match
     const s2t2 = parseInt(set2Team2Score);
 
     if (isNaN(s1t1) || isNaN(s1t2)) {
-      alert('Please enter valid scores for Set 1');
+      alert(`Please enter valid scores for ${scoreLabel}`);
       return;
     }
 
-    // Validate Set 1
     if (!validateBadmintonScore(s1t1, s1t2)) {
       alert('Invalid score');
       return;
     }
 
-    // Validate Set 2 if entered
-    if (!isNaN(s2t1) && !isNaN(s2t2)) {
+    if (!singleSet && !isNaN(s2t1) && !isNaN(s2t2)) {
       if (!validateBadmintonScore(s2t1, s2t2)) {
         alert('Invalid score');
         return;
@@ -98,14 +89,12 @@ export default function MatchesTab({ matches, tournament, onScoreUpdate }: Match
 
     setSubmitting(true);
     try {
-      // Save Set 1
       await onScoreUpdate(matchId, 1, s1t1, s1t2);
-      
-      // Save Set 2 if entered
-      if (!isNaN(s2t1) && !isNaN(s2t2)) {
+
+      if (!singleSet && !isNaN(s2t1) && !isNaN(s2t2)) {
         await onScoreUpdate(matchId, 2, s2t1, s2t2);
       }
-      
+
       setEditingMatch(null);
       setSet1Team1Score('');
       setSet1Team2Score('');
@@ -126,6 +115,14 @@ export default function MatchesTab({ matches, tournament, onScoreUpdate }: Match
     setSet2Team2Score('');
   };
 
+  const headerCols = (
+    <div className="flex items-center gap-1 text-xs font-bold text-gray-700">
+      <div className="flex-1">Players</div>
+      <div className="w-12 text-center">{scoreLabel}</div>
+      {!singleSet && <div className="w-12 text-center">Set 2</div>}
+    </div>
+  );
+
   return (
     <div className="space-y-4">
       {matches.map((match, index) => (
@@ -135,16 +132,9 @@ export default function MatchesTab({ matches, tournament, onScoreUpdate }: Match
           </h3>
 
           {editingMatch === match.id ? (
-            // EDIT MODE - Score entry form
             <div className="space-y-3">
-              {/* Header row */}
-              <div className="flex items-center gap-1 text-xs font-bold text-gray-700">
-                <div className="flex-1">Players</div>
-                <div className="w-12 text-center">Set 1</div>
-                <div className="w-12 text-center">Set 2</div>
-              </div>
+              {headerCols}
 
-              {/* Team 1 */}
               <div className="flex items-center gap-1 p-2 bg-blue-50 rounded min-h-[44px]">
                 <span className="text-sm flex-1">
                   {getPlayerName(1, match.team1Player1Id)} / {getPlayerName(1, match.team1Player2Id)}
@@ -158,18 +148,19 @@ export default function MatchesTab({ matches, tournament, onScoreUpdate }: Match
                   min="0"
                   max="30"
                 />
-                <input
-                  type="number"
-                  value={set2Team1Score}
-                  onChange={(e) => setSet2Team1Score(e.target.value)}
-                  className="w-12 h-[28px] px-1 border rounded text-center text-sm"
-                  placeholder="0"
-                  min="0"
-                  max="30"
-                />
+                {!singleSet && (
+                  <input
+                    type="number"
+                    value={set2Team1Score}
+                    onChange={(e) => setSet2Team1Score(e.target.value)}
+                    className="w-12 h-[28px] px-1 border rounded text-center text-sm"
+                    placeholder="0"
+                    min="0"
+                    max="30"
+                  />
+                )}
               </div>
 
-              {/* Team 2 */}
               <div className="flex items-center gap-1 p-2 bg-red-50 rounded min-h-[44px]">
                 <span className="text-sm flex-1">
                   {getPlayerName(2, match.team2Player1Id)} / {getPlayerName(2, match.team2Player2Id)}
@@ -183,18 +174,19 @@ export default function MatchesTab({ matches, tournament, onScoreUpdate }: Match
                   min="0"
                   max="30"
                 />
-                <input
-                  type="number"
-                  value={set2Team2Score}
-                  onChange={(e) => setSet2Team2Score(e.target.value)}
-                  className="w-12 h-[28px] px-1 border rounded text-center text-sm"
-                  placeholder="0"
-                  min="0"
-                  max="30"
-                />
+                {!singleSet && (
+                  <input
+                    type="number"
+                    value={set2Team2Score}
+                    onChange={(e) => setSet2Team2Score(e.target.value)}
+                    className="w-12 h-[28px] px-1 border rounded text-center text-sm"
+                    placeholder="0"
+                    min="0"
+                    max="30"
+                  />
+                )}
               </div>
 
-              {/* Submit/Cancel Buttons */}
               <div className="flex gap-2 pt-2">
                 <button
                   onClick={() => handleSubmit(match.id)}
@@ -212,41 +204,55 @@ export default function MatchesTab({ matches, tournament, onScoreUpdate }: Match
               </div>
             </div>
           ) : (
-            // VIEW MODE - Display scores
             <>
-              {match.set1 || match.set2 ? (
+              {match.set1 || (!singleSet && match.set2) ? (
                 <div className="space-y-3">
-                  {/* Header row */}
-                  <div className="flex items-center gap-1 text-xs font-bold text-gray-700">
-                    <div className="flex-1">Players</div>
-                    <div className="w-12 text-center">Set 1</div>
-                    <div className="w-12 text-center">Set 2</div>
-                  </div>
+                  {headerCols}
 
-                  {/* Team 1 */}
                   <div className="flex items-center gap-1 p-2 bg-blue-50 rounded min-h-[44px]">
                     <span className="text-sm flex-1">
-                      {getPlayerName(1, match.team1Player1Id)} / {getPlayerName(1, match.team1Player2Id)}
+                      {getPlayerName(1, match.team1Player1Id)} /{' '}
+                      {getPlayerName(1, match.team1Player2Id)}
                     </span>
-                    <div className={`w-12 h-[28px] flex items-center justify-center font-bold text-base rounded ${match.set1?.winner === 1 ? 'bg-green-200' : ''}`}>
+                    <div
+                      className={`w-12 h-[28px] flex items-center justify-center font-bold text-base rounded ${
+                        match.set1?.winner === 1 ? 'bg-green-200' : ''
+                      }`}
+                    >
                       {match.set1?.team1Score ?? '-'}
                     </div>
-                    <div className={`w-12 h-[28px] flex items-center justify-center font-bold text-base rounded ${match.set2?.winner === 1 ? 'bg-green-200' : ''}`}>
-                      {match.set2?.team1Score ?? '-'}
-                    </div>
+                    {!singleSet && (
+                      <div
+                        className={`w-12 h-[28px] flex items-center justify-center font-bold text-base rounded ${
+                          match.set2?.winner === 1 ? 'bg-green-200' : ''
+                        }`}
+                      >
+                        {match.set2?.team1Score ?? '-'}
+                      </div>
+                    )}
                   </div>
 
-                  {/* Team 2 */}
                   <div className="flex items-center gap-1 p-2 bg-red-50 rounded min-h-[44px]">
                     <span className="text-sm flex-1">
-                      {getPlayerName(2, match.team2Player1Id)} / {getPlayerName(2, match.team2Player2Id)}
+                      {getPlayerName(2, match.team2Player1Id)} /{' '}
+                      {getPlayerName(2, match.team2Player2Id)}
                     </span>
-                    <div className={`w-12 h-[28px] flex items-center justify-center font-bold text-base rounded ${match.set1?.winner === 2 ? 'bg-green-200' : ''}`}>
+                    <div
+                      className={`w-12 h-[28px] flex items-center justify-center font-bold text-base rounded ${
+                        match.set1?.winner === 2 ? 'bg-green-200' : ''
+                      }`}
+                    >
                       {match.set1?.team2Score ?? '-'}
                     </div>
-                    <div className={`w-12 h-[28px] flex items-center justify-center font-bold text-base rounded ${match.set2?.winner === 2 ? 'bg-green-200' : ''}`}>
-                      {match.set2?.team2Score ?? '-'}
-                    </div>
+                    {!singleSet && (
+                      <div
+                        className={`w-12 h-[28px] flex items-center justify-center font-bold text-base rounded ${
+                          match.set2?.winner === 2 ? 'bg-green-200' : ''
+                        }`}
+                      >
+                        {match.set2?.team2Score ?? '-'}
+                      </div>
+                    )}
                   </div>
 
                   {!tournament.isFinalized && (
@@ -260,27 +266,24 @@ export default function MatchesTab({ matches, tournament, onScoreUpdate }: Match
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {/* Header row */}
-                  <div className="flex items-center gap-1 text-xs font-bold text-gray-700">
-                    <div className="flex-1">Players</div>
-                    <div className="w-12 text-center">Set 1</div>
-                    <div className="w-12 text-center">Set 2</div>
-                  </div>
+                  {headerCols}
 
                   <div className="flex items-center gap-1 p-2 bg-blue-50 rounded min-h-[44px]">
                     <span className="text-sm flex-1">
-                      {getPlayerName(1, match.team1Player1Id)} / {getPlayerName(1, match.team1Player2Id)}
+                      {getPlayerName(1, match.team1Player1Id)} /{' '}
+                      {getPlayerName(1, match.team1Player2Id)}
                     </span>
                     <div className="w-12 h-[28px]"></div>
-                    <div className="w-12 h-[28px]"></div>
+                    {!singleSet && <div className="w-12 h-[28px]"></div>}
                   </div>
-                  
+
                   <div className="flex items-center gap-1 p-2 bg-red-50 rounded min-h-[44px]">
                     <span className="text-sm flex-1">
-                      {getPlayerName(2, match.team2Player1Id)} / {getPlayerName(2, match.team2Player2Id)}
+                      {getPlayerName(2, match.team2Player1Id)} /{' '}
+                      {getPlayerName(2, match.team2Player2Id)}
                     </span>
                     <div className="w-12 h-[28px]"></div>
-                    <div className="w-12 h-[28px]"></div>
+                    {!singleSet && <div className="w-12 h-[28px]"></div>}
                   </div>
 
                   <button

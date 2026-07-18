@@ -57,6 +57,11 @@ export function womenCount(format: TournamentFormat): number {
   return format === '8v8' ? 4 : 3;
 }
 
+/** 6v6 plays 2 sets per match; 8v8 plays 1 set. */
+export function setsPerMatch(format: TournamentFormat): number {
+  return format === '8v8' ? 1 : 2;
+}
+
 function emptyMatch(
   id: number,
   matchType: MatchType,
@@ -246,10 +251,15 @@ export function updateMatchScore(
   team1Score: number,
   team2Score: number
 ): Tournament {
-  const updatedTournament = { ...tournament };
+  const updatedTournament = { ...tournament, matches: tournament.matches.map((m) => ({ ...m })) };
   const match = updatedTournament.matches.find((m) => m.id === matchId);
 
   if (!match || !validateSetScore(team1Score, team2Score)) {
+    return tournament;
+  }
+
+  const maxSets = setsPerMatch(tournament.format);
+  if (setNumber > maxSets) {
     return tournament;
   }
 
@@ -266,22 +276,55 @@ export function updateMatchScore(
     match.set2 = setScore;
   }
 
-  if (match.set1 && match.set2) {
-    const team1Wins = [match.set1.winner, match.set2.winner].filter((w) => w === 1).length;
-    const team2Wins = [match.set1.winner, match.set2.winner].filter((w) => w === 2).length;
-
-    match.matchWinner = team1Wins > team2Wins ? 1 : 2;
-    match.completed = true;
-  }
+  syncMatchCompletion(match, tournament.format);
 
   return calculateTournamentStats(updatedTournament);
 }
 
 /**
- * Sets needed to clinch = half of total sets = match count (each match has 2 sets).
+ * Mark a match complete based on format (1 set for 8v8, 2 sets for 6v6).
+ * Also repairs in-memory state for older 8v8 rows that had set1 but completed=false.
+ */
+export function syncMatchCompletion(match: Match, format: TournamentFormat): void {
+  const maxSets = setsPerMatch(format);
+
+  if (maxSets === 1) {
+    if (match.set1?.winner) {
+      match.matchWinner = match.set1.winner;
+      match.completed = true;
+      // Single-set format: ignore any accidental set2
+      match.set2 = null;
+    } else {
+      match.matchWinner = null;
+      match.completed = false;
+    }
+    return;
+  }
+
+  if (match.set1 && match.set2) {
+    const team1Wins = [match.set1.winner, match.set2.winner].filter((w) => w === 1).length;
+    const team2Wins = [match.set1.winner, match.set2.winner].filter((w) => w === 2).length;
+    match.matchWinner = team1Wins > team2Wins ? 1 : 2;
+    match.completed = true;
+  } else {
+    match.matchWinner = null;
+    match.completed = false;
+  }
+}
+
+export function syncTournamentMatches(tournament: Tournament): Tournament {
+  for (const match of tournament.matches) {
+    syncMatchCompletion(match, tournament.format);
+  }
+  return calculateTournamentStats(tournament);
+}
+
+/**
+ * Sets needed to clinch = majority of total sets played across the tournament.
  */
 export function setsToWin(tournament: Tournament): number {
-  return tournament.matches.length;
+  const total = tournament.matches.length * setsPerMatch(tournament.format);
+  return Math.ceil(total / 2);
 }
 
 export function calculateTournamentStats(tournament: Tournament): Tournament {
@@ -331,7 +374,11 @@ export function calculateTournamentStats(tournament: Tournament): Tournament {
 }
 
 export function isTournamentComplete(tournament: Tournament): boolean {
-  return tournament.matches.every((match) => match.completed);
+  const synced = syncTournamentMatches({
+    ...tournament,
+    matches: tournament.matches.map((m) => ({ ...m })),
+  });
+  return synced.matches.every((match) => match.completed);
 }
 
 export function generateTournamentId(): string {
