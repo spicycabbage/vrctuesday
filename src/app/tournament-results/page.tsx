@@ -119,7 +119,8 @@ function TournamentResultsContent() {
                   : tournament.team2Name
                 : 'Incomplete';
 
-              const formattedDate = new Date(tournament.date).toLocaleDateString('en-US', {
+              const [y, m, d] = tournament.date.split('-').map(Number);
+              const formattedDate = new Date(y, m - 1, d).toLocaleDateString('en-US', {
                 month: 'short',
                 day: 'numeric',
                 year: 'numeric',
