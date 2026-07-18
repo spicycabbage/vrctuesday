@@ -1,5 +1,7 @@
 // VRC Tuesday - Team-Based Badminton Tournament Logic
 
+import { todayInPst, dateStringToPstDate } from './dates';
+
 export type PlayerGender = 'M' | 'W';
 export type MatchType = 'XD' | 'MD' | 'WD';
 export type TournamentFormat = '6v6' | '8v8';
@@ -216,18 +218,7 @@ export function createTournament(
   return {
     id: generateTournamentId(),
     accessCode,
-    date:
-      date ||
-      (() => {
-        const now = new Date();
-        const fmt = new Intl.DateTimeFormat('en-CA', {
-          timeZone: 'America/Los_Angeles',
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-        });
-        return fmt.format(now);
-      })(),
+    date: date || todayInPst(),
     format,
     team1Name,
     team2Name,
@@ -240,7 +231,7 @@ export function createTournament(
     team2TotalPoints: 0,
     tournamentWinner: null,
     isFinalized: false,
-    createdAt: new Date(),
+    createdAt: date ? dateStringToPstDate(date) : dateStringToPstDate(todayInPst()),
   };
 }
 

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, Suspense, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { formatTournamentDate } from '@/lib/dates';
 
 interface PlayerDetail {
   won: boolean;
@@ -219,7 +220,7 @@ function AdvancedAnalyticsContent() {
                                 <span className={`font-bold ${detail.won ? 'text-green-700' : 'text-red-600'}`}>
                                   {detail.won ? 'WIN' : 'LOSS'}
                                 </span>
-                                <span className="text-gray-400">{detail.date}</span>
+                                <span className="text-gray-400">{formatTournamentDate(detail.date)}</span>
                               </div>
                               <p className="text-gray-700">
                                 <span className="font-semibold">{detail.matchType}</span> · Partner: {detail.partner}

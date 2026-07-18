@@ -7,6 +7,7 @@ import {
   playersPerTeam,
   womenCount,
 } from '@/lib/gameLogic';
+import { todayInPst } from '@/lib/dates';
 
 const WOMEN_PLAYERS = ['Ivy', 'Vlo', 'Karen', 'Joanne', 'Valerie', 'Anna', 'Elisha', 'Crystal', 'Misaki', 'Jenna', 'Steph', 'Roz', 'Lily'];
 const MEN_PLAYERS = ['Mike', 'Clinton', 'Alex', 'Trevor', 'Justin', 'Yves', 'Anish', 'Richard', 'Kevin', 'Rich'];
@@ -26,10 +27,7 @@ export default function CreateTournament() {
   const [accessCode, setAccessCode] = useState('111');
   const [team1Name, setTeam1Name] = useState('Team A');
   const [team2Name, setTeam2Name] = useState('Team B');
-  const [tournamentDate, setTournamentDate] = useState(() => {
-    const today = new Date();
-    return today.toISOString().split('T')[0];
-  });
+  const [tournamentDate, setTournamentDate] = useState(() => todayInPst());
 
   const [team1Players, setTeam1Players] = useState<string[]>(() => emptyRoster('6v6'));
   const [team2Players, setTeam2Players] = useState<string[]>(() => emptyRoster('6v6'));

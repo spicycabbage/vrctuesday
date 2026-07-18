@@ -2,6 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { formatTournamentDate } from '@/lib/dates';
 
 interface MatchDetail {
   won: boolean;
@@ -152,7 +153,7 @@ function PartnershipStatisticsContent() {
                         <span className={`font-bold ${match.won ? 'text-green-700' : 'text-red-600'}`}>
                           {match.won ? 'WIN' : 'LOSS'}
                         </span>
-                        <span className="text-gray-400">{match.date}</span>
+                        <span className="text-gray-400">{formatTournamentDate(match.date)}</span>
                       </div>
                       <p className="text-gray-700"><span className="font-semibold">{match.matchType}</span></p>
                       <p className="text-gray-700 mt-0.5">vs {match.opponents}</p>

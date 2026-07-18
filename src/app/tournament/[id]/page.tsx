@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Tournament, Match, MatchType, getMatchesByType } from '@/lib/gameLogic';
 import MatchesTab from '@/components/MatchesTab';
 import ResultsTab from '@/components/ResultsTab';
+import { formatTournamentDate } from '@/lib/dates';
 
 export default function TournamentPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
@@ -107,7 +108,7 @@ export default function TournamentPage({ params }: { params: Promise<{ id: strin
       {/* Header */}
       <div className="page-section-header">
         <p className="text-center text-xs text-gray-500">
-          {tournament.date} · Code: {tournament.accessCode}
+          {formatTournamentDate(tournament.date)} · Code: {tournament.accessCode}
           {tournament.format ? ` · ${tournament.format}` : ''}
         </p>
 

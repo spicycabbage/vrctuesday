@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Tournament, TournamentFormat } from '@/lib/gameLogic';
 import ResultsTab from '@/components/ResultsTab';
+import { formatTournamentDate } from '@/lib/dates';
 
 function TournamentResultsContent() {
   const router = useRouter();
@@ -119,12 +120,7 @@ function TournamentResultsContent() {
                   : tournament.team2Name
                 : 'Incomplete';
 
-              const [y, m, d] = tournament.date.split('-').map(Number);
-              const formattedDate = new Date(y, m - 1, d).toLocaleDateString('en-US', {
-                month: 'short',
-                day: 'numeric',
-                year: 'numeric',
-              });
+              const formattedDate = formatTournamentDate(tournament.date);
 
               return (
                 <div

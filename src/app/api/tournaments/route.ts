@@ -5,6 +5,7 @@ import {
   TournamentFormat,
 } from '@/lib/gameLogic';
 import { saveTournament, getActiveTournament } from '@/lib/tournamentRepo';
+import { dateStringToPstDate } from '@/lib/dates';
 
 function parseFormat(raw: unknown): TournamentFormat {
   return raw === '8v8' ? '8v8' : '6v6';
@@ -97,7 +98,7 @@ export async function POST(request: NextRequest) {
     );
 
     if (date) {
-      tournament.createdAt = new Date(date);
+      tournament.createdAt = dateStringToPstDate(date);
     }
 
     await saveTournament(tournament);
