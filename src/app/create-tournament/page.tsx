@@ -10,7 +10,7 @@ import {
 import { todayInPst } from '@/lib/dates';
 
 const WOMEN_PLAYERS = ['Ivy', 'Vlo', 'Karen', 'Joanne', 'Valerie', 'Anna', 'Elisha', 'Crystal', 'Misaki', 'Jenna', 'Steph', 'Roz', 'Lily'];
-const MEN_PLAYERS = ['Mike', 'Clinton', 'Alex', 'Trevor', 'Justin', 'Yves', 'Anish', 'Richard', 'Kevin', 'Rich'];
+const MEN_PLAYERS = ['Mike', 'Clinton', 'Alex', 'Trevor', 'Justin', 'Yves', 'Anish', 'Richard', 'Kevin'];
 
 function emptyRoster(format: TournamentFormat): string[] {
   return Array(playersPerTeam(format)).fill('');
